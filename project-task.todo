@@ -1,0 +1,19 @@
+Main Menu:
+    Background:
+        ☐ Randomly generated dots (stars)
+    Buttons:
+        ☐ Play Button
+        ☐ Settings
+        ☐ Achivements
+Settings:
+    ☐ Volume
+    ☐ Music
+    ☐ Auto-save delay
+Core Gameplay:
+    UI:
+        ☐ HUD
+        ☐ SpaceShip
+        ☐ 4/5 Asteroids
+        ☐ Achivements Button
+        ☐ Settings Button
+        ☐ Skill Tree Button
