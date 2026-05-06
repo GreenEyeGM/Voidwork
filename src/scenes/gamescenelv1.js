@@ -6,7 +6,6 @@ export class GameSceneLV1 extends Phaser.Scene {
         console.log('GameScene Level 1 loaded');
     }
 
-
     create() {
         createBackground(this, 200, 100, 50);
     }

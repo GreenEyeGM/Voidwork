@@ -21,8 +21,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     create() {
         let gameWidth = this.cameras.main.width;
-        let gameHeight = this.cameras.main.height;
-        
+
         createBackground(this, 100, 75, 50);
 
         // Add title text
@@ -45,16 +44,12 @@ export class MainMenuScene extends Phaser.Scene {
 
         playButton.on('pointerdown', () => {
             playButton.setFrame(2); // Pressed state
-        });
-
-        // Play button functionality to start the game scene
-        playButton.on('pointerdown', () => {
             this.scene.start('GameSceneLV1');
         });
         //#endregion
         
         //#region Add achievements button and text
-        let achievementsButton = this.add.sprite(gameWidth/2 + 32, 480, 'mainMenuButtons', 0).setInteractive().setOrigin(0.5);
+        let achievementsButton = this.add.sprite(gameWidth/2 + 32, 480, 'mainMenuButtons', 6).setInteractive().setOrigin(0.5);
         
         // Add Text next to achievements button
         let achievementsText = this.add.text(gameWidth/2 - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
@@ -70,16 +65,12 @@ export class MainMenuScene extends Phaser.Scene {
 
         achievementsButton.on('pointerdown', () => {
             achievementsButton.setFrame(8); // Pressed state
-        });
-
-        // Achievements button functionality to start the achievements scene (to be implemented)
-        achievementsButton.on('pointerdown', () => {
-            // this.scene.start('AchievementsScene'); // Uncomment when AchievementsScene is implemented
+            this.scene.start('AchievementsScene'); 
         });
         //#endregion
 
         //#region Add settings button and text
-        let settingsButton = this.add.sprite(gameWidth/2 + 32, 560, 'mainMenuButtons', 0).setInteractive().setOrigin(0.5);
+        let settingsButton = this.add.sprite(gameWidth/2 + 32, 560, 'mainMenuButtons', 5).setInteractive().setOrigin(0.5);
         
         // Add Text next to settings button
         let settingsText = this.add.text(gameWidth/2 - 149, 560, 'Settings', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
@@ -95,13 +86,8 @@ export class MainMenuScene extends Phaser.Scene {
 
         settingsButton.on('pointerdown', () => {
             settingsButton.setFrame(3); // Pressed state
+            this.scene.start('SettingsScene'); 
         });
-
-        // Settings button functionality to start the settings scene (to be implemented)
-        settingsButton.on('pointerdown', () => {
-            // this.scene.start('SettingsScene'); // Uncomment when SettingsScene is implemented
-        });
-
         //#endregion
 
     }
