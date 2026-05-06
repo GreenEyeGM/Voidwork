@@ -1,3 +1,5 @@
+import { createBackground } from "../utils/background.js";
+
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainMenu' });
@@ -20,52 +22,11 @@ export class MainMenuScene extends Phaser.Scene {
     create() {
         let gameWidth = this.cameras.main.width;
         let gameHeight = this.cameras.main.height;
-        // Add void like color
-        this.cameras.main.setBackgroundColor('#210219');
         
+        createBackground(this, 100, 75, 50);
+
         // Add title text
         let titleText = this.add.text(gameWidth/2, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0);
-        
-        //#region AddAsteroids
-
-        let gfx = this.add.graphics();
-
-        //Small Asteroids
-        for (let asteroid = 0; asteroid < 100; asteroid++) {
-
-        let y = Phaser.Math.Between(0, 768);
-        let x = Phaser.Math.Between(0, 1024);
-
-        gfx.fillStyle( 0xE9F564,  0.2 ).fillCircle(x, y, 3);
-        gfx.fillStyle( 0xEAFF00,  0.05 ).fillCircle(x, y, 2);
-        gfx.fillStyle( 0xFFFFFF,  1).fillCircle(x, y, 1);
-         
-        }
-
-        //Mid Asteroids
-        for (let asteroid = 0; asteroid < 75; asteroid++) {
-
-        let y = Phaser.Math.Between(0, 768);
-        let x = Phaser.Math.Between(0, 1024);
-
-        gfx.fillStyle( 0xE9F564,  0.2 ).fillCircle(x, y, 4);
-        gfx.fillStyle( 0xEAFF00,  0.05 ).fillCircle(x, y, 3);
-        gfx.fillStyle( 0xFFFFFF,  1).fillCircle(x, y, 2);
-         
-        }
-
-        //Large Asteroids
-        for (let asteroid = 0; asteroid < 75; asteroid++) {
-
-        let y = Phaser.Math.Between(0, 768);
-        let x = Phaser.Math.Between(0, 1024);
-
-        gfx.fillStyle( 0xE9F564,  0.2 ).fillCircle(x, y, 5);
-        gfx.fillStyle( 0xEAFF00,  0.05 ).fillCircle(x, y, 4);
-        gfx.fillStyle( 0xFFFFFF,  1).fillCircle(x, y, 3);
-         
-        }
-        //#endregion
         
         //#region Add play button and text
         let playButton = this.add.sprite(gameWidth/2 + 32, 400, 'mainMenuButtons', 0).setInteractive().setOrigin(0.5);

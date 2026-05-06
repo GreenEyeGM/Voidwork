@@ -1,6 +1,6 @@
 import { MainMenuScene } from "./scenes/mainmenuscene.js";
 import { GameSceneLV1 } from "./scenes/gamescenelv1.js";
-import { AchievementsScene } from "./scenes/achivementsscene.js";
+import { AchievementsScene } from "./scenes/achievementsscene.js";
 import { SettingsScene } from "./scenes/settingsscene.js";
 
 const config = {
@@ -12,7 +12,14 @@ const config = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            debug: false
+        }
+    },
+    // Add void like color
     backgroundColor:'#210219'
-};
+    };
 
 const game = new Phaser.Game(config);

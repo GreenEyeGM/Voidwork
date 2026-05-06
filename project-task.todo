@@ -10,15 +10,65 @@ Main Menu:
         ☐ Fix Settings Button redirect to Settings Scene
         ☐ Fix Achievements and Settings Button not showing up with proper icons
         ☐ Polish the code
-Settings:
-    ☐ Volume
-    ☐ Music
-    ☐ Auto-save delay
+Achievements Scene:
+    Background:
+        ✔ Randomly generated dots (stars) @done (5/5/2026, 4:19:34 PM)
+    UI:
+        ☐ Back Button
+        ☐ List of achievements with icons and descriptions
+    Functionality:
+        ☐ Back Button
+        ☐ Display achievements based on player's progress (e.g. mining asteroids, collecting resources, upgrading spaceship, etc.)
+        ☐ Add icons and descriptions for each achievement
+Settings Scene:
+    Background:
+        ✔ Randomly generated dots (stars) @done (5/5/2026, 4:19:34 PM)
+    UI:
+        ☐ Back Button
+        ☐ Volume Slider
+        ☐ Music Toggle
+        ☐ Auto-save Delay Slider
+    Functionality:
+        ☐ Back Button functionality to return to Main Menu
+        ☐ Volume Slider functionality to adjust game volume
+        ☐ Music Toggle functionality to turn background music on/off
+        ☐ Auto-save Delay Slider functionality to adjust the delay between auto-saves (e.g. 1 minute, 5 minutes, 10 minutes, etc.)
+Game Scene LV1:
+    Add:
+        ☐ SpaceShip
+        ☐ 4/5 Asteroids
 Core Gameplay:
     UI:
         ☐ HUD
-        ☐ SpaceShip
-        ☐ 4/5 Asteroids
         ☐ Achievements Button
         ☐ Settings Button
         ☐ Skill Tree Button
+        ☐ Upgrade Button
+        ☐ Asteroid Health Bar
+        ☐ Asteroid Counter
+    Audio:
+        ☐ Background Music
+        ☐ Mining Sound Effect
+        ☐ Resource Collection Sound Effect
+        ☐ Upgrade Sound Effect
+        ☐ Skill tree sound effect
+        ☐ Click sound effect for buttons
+        ☐ Pause lowers/mutes music and sound effects, unpause restores them
+    Mechanics:
+        ☐ Click to mine asteroids
+        ☐ Click to collect resources (debris from destroyed asteroids)
+        ☐ Upgrade spaceship with resources
+        ☐ Add points to skilltree with resources
+        ☐ Add achievements for reaching certain milestones (e.g. mining 1,10,50,200,500,1000 asteroids, collecting 10,100,500,1000 resources, upgrading spaceship to level 5, etc.)
+        ☐ Add more asteroid types with different properties (e.g. health, resource yield, etc.)
+        ☐ Asteroids should spawn randomly and move across the screen, with increasing difficulty after each prestige/level (e.g. faster speed, more health, etc.)
+        ☐ Add more spaceship upgrades (e.g. faster mining, more resources per click, auto mine, auto collect, etc.)
+        ☐ Add more skill tree nodes (e.g. increase resource yield, decrease resource consumption, etc.)
+    Functionality:
+        ☐ Implement core gameplay mechanics
+        ☐ Implement UI elements
+        ☐ Implement achievements and skill tree functionality
+        ☐ Implement different asteroid types and spaceship upgrades
+        ☐ Polish the code and gameplay experience
+Needs fixing:
+    ☐ Figure out how to remove background code from the scenes and put it in a separate function that can be called in each scene to avoid code duplication
