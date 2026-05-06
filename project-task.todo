@@ -8,7 +8,7 @@ Main Menu:
     Fix:
         ☐ Fix Achievements Button redirect to Achievements Scene
         ☐ Fix Settings Button redirect to Settings Scene
-        ☐ Fix Achievements and Settings Button not showing up with proper icons
+        ✔ Fix Achievements and Settings Button not showing up with proper icons @done (5/6/2026, 5:52:10 PM)
         ☐ Polish the code
 Achievements Scene:
     Background:
@@ -39,11 +39,17 @@ Game Scene LV1:
         ☐ 4/5 Asteroids
 Core Gameplay:
     UI:
-        ☐ HUD
-        ☐ Achievements Button
-        ☐ Settings Button
-        ☐ Skill Tree Button
-        ☐ Upgrade Button
+        HUD:
+            ✔ Back @done (5/7/2026, 1:30:37 AM)
+            ✔ Upgrade Button (Top Right. Next to Back) @done (5/7/2026, 1:31:52 AM)
+            ✔ Skill Tree Button (Top Right. Next to Upgrade) @done (5/7/2026, 1:32:20 AM)
+            ✔ Ship (Top Right. Next to Skill Tree. Shows info about current spaceship level and upgrades) @done (5/7/2026, 1:33:06 AM)
+            ☐ Settings Button (Bottom Right. Also visible in esc menu)
+        Escape Menu:
+            ☐ Resume (at the bottom. Also triggered by pressing esc again)
+            ☐ Achievements Button
+            ☐ Settings Button
+            ☐ Main Menu Button
         ☐ Asteroid Health Bar
         ☐ Asteroid Counter
     Audio:
@@ -71,4 +77,7 @@ Core Gameplay:
         ☐ Implement different asteroid types and spaceship upgrades
         ☐ Polish the code and gameplay experience
 Needs fixing:
-    ☐ Figure out how to remove background code from the scenes and put it in a separate function that can be called in each scene to avoid code duplication
+    ✔ Figure out how to remove background code from the scenes and put it in a separate function that can be called in each scene to avoid code duplication @done (5/6/2026, 5:50:59 PM)
+    ☐ Icons in main menu are clicable outside of the icon area. (Fix hitbox of the buttons)
+    Future use of unused variables:
+    ☐ gfx in background.js - store the variable in case of future use (manual clear,destroy,redraw, etc.)

@@ -2,7 +2,7 @@ import { createBackground } from "../utils/background.js";
 
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'MainMenu' });
+        super({ key: 'MainMenuScene' });
         console.log('MainMenu loaded');
     }
 
@@ -16,7 +16,8 @@ export class MainMenuScene extends Phaser.Scene {
         });
 
         // Load all the buttons with all three states (normal, hover, and pressed)
-        this.load.spritesheet('mainMenuButtons', '../assets/images/Main_Menu_UI_Buttons.png', { frameWidth: 64, frameHeight: 64 });
+        this.load.spritesheet('mainMenuButtons', '../assets/images/Main_Menu_UI_Buttons.png', { frameWidth: 128, frameHeight: 128 });
+        // this.load.spritesheet('testing', '../assets/images/testing.png', { frameWidth: 128, frameHeight: 64 });
     }
 
     create() {
@@ -25,10 +26,11 @@ export class MainMenuScene extends Phaser.Scene {
         createBackground(this, 100, 75, 50);
 
         // Add title text
-        let titleText = this.add.text(gameWidth/2, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0);
+        let titleText = this.add.text(gameWidth/2, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
         
         //#region Add play button and text
         let playButton = this.add.sprite(gameWidth/2 + 32, 400, 'mainMenuButtons', 0).setInteractive().setOrigin(0.5);
+        //let playTest = this.add.sprite(gameWidth/2 - 200, 400, 'testing', 0).setOrigin(0.5);
         
         // Add Text next to play button
         let playText = this.add.text(gameWidth/2 - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
@@ -45,6 +47,7 @@ export class MainMenuScene extends Phaser.Scene {
         playButton.on('pointerdown', () => {
             playButton.setFrame(2); // Pressed state
             this.scene.start('GameSceneLV1');
+            console.log('Back button clicked, returning to main menu');
         });
         //#endregion
         
