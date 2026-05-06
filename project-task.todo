@@ -4,7 +4,12 @@ Main Menu:
     Buttons:
         ✔ Play Button @done (5/5/2026, 4:19:32 PM)
         ✔ Settings @done (5/5/2026, 4:19:33 PM)
-        ✔ Achivements @done (5/5/2026, 4:19:33 PM)
+        ✔ Achievements @done (5/5/2026, 4:19:33 PM)
+    Fix:
+        ☐ Fix Achievements Button redirect to Achievements Scene
+        ☐ Fix Settings Button redirect to Settings Scene
+        ☐ Fix Achievements and Settings Button not showing up with proper icons
+        ☐ Polish the code
 Settings:
     ☐ Volume
     ☐ Music
@@ -14,6 +19,6 @@ Core Gameplay:
         ☐ HUD
         ☐ SpaceShip
         ☐ 4/5 Asteroids
-        ☐ Achivements Button
+        ☐ Achievements Button
         ☐ Settings Button
         ☐ Skill Tree Button

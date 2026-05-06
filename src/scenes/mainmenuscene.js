@@ -93,26 +93,26 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
         
         //#region Add achievements button and text
-        let achivementsButton = this.add.sprite(gameWidth/2 + 32, 480, 'mainMenuButtons', 0).setInteractive().setOrigin(0.5);
+        let achievementsButton = this.add.sprite(gameWidth/2 + 32, 480, 'mainMenuButtons', 0).setInteractive().setOrigin(0.5);
         
         // Add Text next to achievements button
         let achievementsText = this.add.text(gameWidth/2 - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Achievements button interactivity
-        achivementsButton.on('pointerover', () => {
-            achivementsButton.setFrame(7); // Hover state
+        achievementsButton.on('pointerover', () => {
+            achievementsButton.setFrame(7); // Hover state
         });
 
-        achivementsButton.on('pointerout', () => {
-            achivementsButton.setFrame(6); // Normal state
+        achievementsButton.on('pointerout', () => {
+            achievementsButton.setFrame(6); // Normal state
         });
 
-        achivementsButton.on('pointerdown', () => {
-            achivementsButton.setFrame(8); // Pressed state
+        achievementsButton.on('pointerdown', () => {
+            achievementsButton.setFrame(8); // Pressed state
         });
 
         // Achievements button functionality to start the achievements scene (to be implemented)
-        achivementsButton.on('pointerdown', () => {
+        achievementsButton.on('pointerdown', () => {
             // this.scene.start('AchievementsScene'); // Uncomment when AchievementsScene is implemented
         });
         //#endregion
