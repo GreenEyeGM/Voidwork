@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "es6",
+    "checkJs": true,
+    "baseUrl": "."
+  },
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["phaser"]
+  },
+  "include": ["src/**/*"]
+}

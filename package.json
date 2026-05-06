@@ -1,0 +1,27 @@
+{
+  "name": "voidwork",
+  "version": "1.0.0",
+  "description": "Voidwork is a 2D space idle/incremental web game built with Phaser 4 and vanilla JavaScript. The player mines asteroids, processes minerals into alloys, upgrades their ship, and prestiges once to reach a harder asteroid field before completing a win condition. The game is scoped for a 2-week university deadline.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GreenEyeGM/Voidwork.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/GreenEyeGM/Voidwork/issues"
+  },
+  "homepage": "https://github.com/GreenEyeGM/Voidwork#readme",
+  "dependencies": {
+    "phaser": "^4.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
