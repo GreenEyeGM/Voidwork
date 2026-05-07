@@ -5,10 +5,7 @@ export class HudScene extends Phaser.Scene {
         super({ key: 'HudScene' });
         console.log('Hud Scene loaded');
     }
-
-    preload () {
-        this.load.spritesheet('HUDIcons', '../assets/images/HUD_Icons.png', { frameWidth: 90, frameHeight: 108 });
-    }
+    
     create() {
         // // Add HUD icons
         const HUD_ICONS = [];

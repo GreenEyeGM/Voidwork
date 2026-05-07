@@ -1,38 +1,24 @@
 import { createBackground } from "../utils/Background.js";
-import { GAME_WIDTH } from "../config/GameConfig.js";
+import { GAME_WIDTH, GAME_CENTER_X, GAME_CENTER_Y } from "../config/GameConfig.js";
 
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainMenuScene' });
         console.log('MainMenu loaded');
     }
-
-    preload(){
-        // Load the font for the main menu
-        this.load.font({
-            key: 'Upheaval',
-            url: '../assets/font/upheavtt.ttf',
-            format: 'truetype',
-            descriptors: { style: 'normal', weight: '400' }
-        });
-
-        // Load all the buttons with all three states (normal, hover, and pressed)
-        this.load.spritesheet('mainMenuButtons', '../assets/images/Main_Menu_UI_Buttons.png', { frameWidth: 128, frameHeight: 128 });
-        // this.load.spritesheet('testing', '../assets/images/testing.png', { frameWidth: 128, frameHeight: 64 });
-    }
-
+    
     create() {
         createBackground(this, 100, 75, 50);
 
         // Add title text
-        let titleText = this.add.text(GAME_WIDTH/2, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
+        let titleText = this.add.text(GAME_CENTER_X, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
         
         //#region Add play button and text
-        let playButton = this.add.sprite(GAME_WIDTH/2 + 32, 400, 'mainMenuButtons', 0).setInteractive({useHandCursor: true}).setOrigin(0.5);
-        //let playTest = this.add.sprite(GAME_WIDTH/2 - 200, 400, 'testing', 0).setOrigin(0.5);
+        let playButton = this.add.sprite(GAME_CENTER_X + 32, 400, 'mainMenuButtons', 0).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        //let playTest = this.add.sprite(GAME_CENTER_X - 200, 400, 'testing', 0).setOrigin(0.5);
         
         // Add Text next to play button
-        let playText = this.add.text(GAME_WIDTH/2 - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        let playText = this.add.text(GAME_CENTER_X - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Play button interactivity
         playButton.on('pointerover', () => {
@@ -51,10 +37,10 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
         
         //#region Add achievements button and text
-        let achievementsButton = this.add.sprite(GAME_WIDTH/2 + 32, 480, 'mainMenuButtons', 6).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        let achievementsButton = this.add.sprite(GAME_CENTER_X + 32, 480, 'mainMenuButtons', 6).setInteractive({useHandCursor: true}).setOrigin(0.5);
         
         // Add Text next to achievements button
-        let achievementsText = this.add.text(GAME_WIDTH/2 - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        let achievementsText = this.add.text(GAME_CENTER_X - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Achievements button interactivity
         achievementsButton.on('pointerover', () => {
@@ -72,10 +58,10 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
 
         //#region Add settings button and text
-        let settingsButton = this.add.sprite(GAME_WIDTH/2 + 32, 560, 'mainMenuButtons', 5).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        let settingsButton = this.add.sprite(GAME_CENTER_X + 32, 560, 'mainMenuButtons', 5).setInteractive({useHandCursor: true}).setOrigin(0.5);
         
         // Add Text next to settings button
-        let settingsText = this.add.text(GAME_WIDTH/2 - 149, 560, 'Settings', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        let settingsText = this.add.text(GAME_CENTER_X - 149, 560, 'Settings', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Settings button interactivity
         settingsButton.on('pointerover', () => {
@@ -92,5 +78,8 @@ export class MainMenuScene extends Phaser.Scene {
         });
         //#endregion
 
+        //Main Menu music
+        this.sound.add('mainMenu1');
+        this.sound.add('mainMenu2');
     }
 }
