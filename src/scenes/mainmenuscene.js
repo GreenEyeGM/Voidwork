@@ -1,4 +1,5 @@
 import { createBackground } from "../utils/Background.js";
+import { GAME_WIDTH } from "../config/GameConfig.js";
 
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
@@ -21,19 +22,17 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     create() {
-        let gameWidth = this.cameras.main.width;
-
         createBackground(this, 100, 75, 50);
 
         // Add title text
-        let titleText = this.add.text(gameWidth/2, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
+        let titleText = this.add.text(GAME_WIDTH/2, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
         
         //#region Add play button and text
-        let playButton = this.add.sprite(gameWidth/2 + 32, 400, 'mainMenuButtons', 0).setInteractive({useHandCursor: true}).setOrigin(0.5);
-        //let playTest = this.add.sprite(gameWidth/2 - 200, 400, 'testing', 0).setOrigin(0.5);
+        let playButton = this.add.sprite(GAME_WIDTH/2 + 32, 400, 'mainMenuButtons', 0).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        //let playTest = this.add.sprite(GAME_WIDTH/2 - 200, 400, 'testing', 0).setOrigin(0.5);
         
         // Add Text next to play button
-        let playText = this.add.text(gameWidth/2 - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        let playText = this.add.text(GAME_WIDTH/2 - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Play button interactivity
         playButton.on('pointerover', () => {
@@ -52,10 +51,10 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
         
         //#region Add achievements button and text
-        let achievementsButton = this.add.sprite(gameWidth/2 + 32, 480, 'mainMenuButtons', 6).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        let achievementsButton = this.add.sprite(GAME_WIDTH/2 + 32, 480, 'mainMenuButtons', 6).setInteractive({useHandCursor: true}).setOrigin(0.5);
         
         // Add Text next to achievements button
-        let achievementsText = this.add.text(gameWidth/2 - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        let achievementsText = this.add.text(GAME_WIDTH/2 - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Achievements button interactivity
         achievementsButton.on('pointerover', () => {
@@ -73,10 +72,10 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
 
         //#region Add settings button and text
-        let settingsButton = this.add.sprite(gameWidth/2 + 32, 560, 'mainMenuButtons', 5).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        let settingsButton = this.add.sprite(GAME_WIDTH/2 + 32, 560, 'mainMenuButtons', 5).setInteractive({useHandCursor: true}).setOrigin(0.5);
         
         // Add Text next to settings button
-        let settingsText = this.add.text(gameWidth/2 - 149, 560, 'Settings', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        let settingsText = this.add.text(GAME_WIDTH/2 - 149, 560, 'Settings', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Settings button interactivity
         settingsButton.on('pointerover', () => {

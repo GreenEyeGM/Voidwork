@@ -1,3 +1,5 @@
+import { GAME_WIDTH, GAME_HEIGHT } from "../config/GameConfig.js";
+
 export class PauseScene extends Phaser.Scene {
     constructor() {
         super({ key: 'PauseScene' });
@@ -5,14 +7,11 @@ export class PauseScene extends Phaser.Scene {
     }
 
     create() {
-        let gameWidth = this.scale.width;
-        let gameHeight = this.scale.height;
-
         // Semi-transparent background
-        this.add.rectangle(0, 0, gameWidth, gameHeight, 0x000000, 0.5).setOrigin(0);
+        this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5).setOrigin(0);
 
         // Pause menu container
-        const menuContainer = this.add.container(gameWidth / 2, gameHeight / 2);
+        const menuContainer = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
         // Menu background
         const bg = this.add.rectangle(0, 0, 300, 300, 0x222222).setOrigin(0.5);
