@@ -1,12 +1,13 @@
-import { MainMenuScene } from "./scenes/mainmenuscene.js";
-import { GameSceneLV1 } from "./scenes/gamescenelv1.js";
-import { AchievementsScene } from "./scenes/achievementsscene.js";
-import { SettingsScene } from "./scenes/settingsscene.js";
-import { HudScene } from "./scenes/hudscene.js";
+import { MainMenuScene } from "./scenes/MainMenuScene.js";
+import { GameScene } from "./scenes/GameScene.js";
+import { AchievementsScene } from "./scenes/AchievementsScene.js";
+import { SettingsScene } from "./scenes/SettingsScene.js";
+import { HudScene } from "./scenes/HudScene.js";
+import { PauseScene } from "./scenes/PauseMenuScene.js";
 
 const config = {
     type: Phaser.WEBGL,
-    scene: [MainMenuScene,GameSceneLV1,SettingsScene,AchievementsScene,HudScene],
+    scene: [MainMenuScene,GameScene,SettingsScene,AchievementsScene,HudScene,PauseScene],
     scale: {
         width: 1024,
         height: 768,
