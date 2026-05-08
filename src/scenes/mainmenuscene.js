@@ -7,6 +7,7 @@ export class MainMenuScene extends Phaser.Scene {
         console.log('MainMenu loaded');
     }
     
+    
     create() {
         createBackground(this, 100, 75, 50);
 
@@ -15,7 +16,6 @@ export class MainMenuScene extends Phaser.Scene {
         
         //#region Add play button and text
         let playButton = this.add.sprite(GAME_CENTER_X + 32, 400, 'mainMenuButtons', 0).setInteractive({useHandCursor: true}).setOrigin(0.5);
-        //let playTest = this.add.sprite(GAME_CENTER_X - 200, 400, 'testing', 0).setOrigin(0.5);
         
         // Add Text next to play button
         let playText = this.add.text(GAME_CENTER_X - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
@@ -32,7 +32,6 @@ export class MainMenuScene extends Phaser.Scene {
         playButton.on('pointerdown', () => {
             playButton.setFrame(2); // Pressed state
             this.scene.start('GameScene');
-            console.log('Back button clicked, returning to main menu');
         });
         //#endregion
         
@@ -53,7 +52,8 @@ export class MainMenuScene extends Phaser.Scene {
 
         achievementsButton.on('pointerdown', () => {
             achievementsButton.setFrame(8); // Pressed state
-            this.scene.start('AchievementsScene'); 
+            this.scene.pause();
+            this.scene.launch('AchievementsScene', { callerScene: 'MainMenuScene' });
         });
         //#endregion
 
@@ -74,12 +74,14 @@ export class MainMenuScene extends Phaser.Scene {
 
         settingsButton.on('pointerdown', () => {
             settingsButton.setFrame(3); // Pressed state
-            this.scene.start('SettingsScene'); 
+            this.scene.pause('MainMenuScene'); // Stop the main menu scene
+            this.scene.launch('SettingsScene', { callerScene: 'MainMenuScene' }); // Launch the settings menu
         });
         //#endregion
 
         //Main Menu music
         this.sound.add('mainMenu1');
         this.sound.add('mainMenu2');
+        
     }
 }

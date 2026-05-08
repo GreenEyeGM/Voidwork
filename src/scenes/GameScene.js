@@ -8,7 +8,7 @@ export class GameScene extends Phaser.Scene {
     
     create() {
         createBackground(this, 200, 100, 50);
-        this.scene.launch('HudScene'); // Launch the HUD scene on top of the game scene
+        this.scene.launch('HudScene').bringToTop('HudScene'); // Launch the HUD scene on top of the game scene
 
         // ── RESOURCE COUNTERS ─────────────────────────────────
         // Starting values

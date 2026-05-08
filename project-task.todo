@@ -6,8 +6,8 @@ Main Menu:
         ✔ Settings @done (5/5/2026, 4:19:33 PM)
         ✔ Achievements @done (5/5/2026, 4:19:33 PM)
     Fix:
-        ☐ Fix Achievements Button redirect to Achievements Scene
-        ☐ Fix Settings Button redirect to Settings Scene
+        ✔ Fix Achievements Button redirect to Achievements Scene @done (5/7/2026, 8:55:12 PM)
+        ✔ Fix Settings Button redirect to Settings Scene @done (5/7/2026, 8:55:12 PM)
         ✔ Fix Achievements and Settings Button not showing up with proper icons @done (5/6/2026, 5:52:10 PM)
         ☐ Polish the code
 Achievements Scene:
@@ -36,7 +36,7 @@ Settings Scene:
 Game Scene LV1:
     Add:
         ☐ SpaceShip
-        ☐ 4/5 Asteroids
+        ✔ 4/5 Asteroids @done (5/7/2026, 8:55:37 PM)
 Core Gameplay:
     UI:
         HUD:
@@ -46,12 +46,13 @@ Core Gameplay:
             ✔ Ship (Top Right. Next to Skill Tree. Shows info about current spaceship level and upgrades) @done (5/7/2026, 1:33:06 AM)
             ☐ Settings Button (Bottom Right. Also visible in esc menu)
         Escape Menu:
-            ☐ Resume (at the bottom. Also triggered by pressing esc again)
-            ☐ Achievements Button
-            ☐ Settings Button
-            ☐ Main Menu Button
+            ✔ Resume (at the bottom. Also triggered by pressing esc again) @done (5/7/2026, 8:54:35 PM)
+            ✔ Achievements Button @done (5/7/2026, 8:54:37 PM)
+            ✔ Settings Button @done (5/7/2026, 8:54:37 PM)
+            ✔ Main Menu Button @done (5/7/2026, 8:54:38 PM)
         ☐ Asteroid Health Bar
-        ☐ Asteroid Counter
+        ✔ Asteroid Counter @done (5/7/2026, 8:56:12 PM)
+        ✔ Resource Counter @done (5/7/2026, 8:56:12 PM)
     Audio:
         ☐ Background Music
         ☐ Mining Sound Effect
