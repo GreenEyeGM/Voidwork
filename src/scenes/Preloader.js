@@ -23,12 +23,28 @@ export class Preloader extends Phaser.Scene {
         // Load the music for the main menu
         this.load.audio('mainMenu1', '../assets/audio/music/voidwork_main_menu.mp3');
         this.load.audio('mainMenu2', '../assets/audio/music/voidwork_main_menu2.mp3');
+        // Load the music for the game scene
+        this.load.audio('gameMusic1', '../assets/audio/music/voidwork_creepy_mystery.mp3');
+        this.load.audio('gameMusic2', '../assets/audio/music/voidwork_dark_suspense.mp3');
+
+
+        // Load all the SFX
+        this.load.audio('click', '../assets/audio/sfx/voidwork_click.mp3');
+        this.load.audio('asteroidDestroyed', '../assets/audio/sfx/voidwork_destroy.mp3');
+        this.load.audio('collectResources', '../assets/audio/sfx/voidwork_collect.mp3');
+        this.load.audio('achievementUnlocked', '../assets/audio/sfx/voidwork_achievement.mp3');
 
         // For HUD icons
         this.load.spritesheet('HUDIcons', '../assets/images/HUD_Icons.png', { frameWidth: 90, frameHeight: 108 });
 
         // Load asteroids for Game Scene
         this.load.spritesheet('Asteroids', '../assets/images/asteroids.png', { frameWidth: 128, frameHeight: 128 });
+
+        // Load achievement icons for Achievements Scene
+        this.load.spritesheet('AchievementIcons', '../assets/images/voidwork_achievements.png', { frameWidth: 328, frameHeight: 328 });
+
+        // Load cursor
+        this.load.image('cursor', '../assets/images/voidwork_cursor.png');
         
         //#endregion
         // Name of the game, displayed on the loading screen

@@ -11,6 +11,14 @@ export class MainMenuScene extends Phaser.Scene {
     create() {
         createBackground(this, 100, 75, 50);
 
+        // Play click sound on any button click
+        this.input.on('gameobjectdown', (pointer, gameObject) => {
+        this.sound.play('click', { volume: 0.5 });
+        });
+
+        //Main Menu music
+        this.sound.play('mainMenu1', {volume: 0.1, loop: true});
+
         // Add title text
         let titleText = this.add.text(GAME_CENTER_X, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
         
@@ -32,6 +40,7 @@ export class MainMenuScene extends Phaser.Scene {
         playButton.on('pointerdown', () => {
             playButton.setFrame(2); // Pressed state
             this.scene.start('GameScene');
+            this.sound.stopAll(); // Stop the main menu music when starting the game
         });
         //#endregion
         
@@ -78,10 +87,6 @@ export class MainMenuScene extends Phaser.Scene {
             this.scene.launch('SettingsScene', { callerScene: 'MainMenuScene' }); // Launch the settings menu
         });
         //#endregion
-
-        //Main Menu music
-        this.sound.add('mainMenu1');
-        this.sound.add('mainMenu2');
         
     }
 }

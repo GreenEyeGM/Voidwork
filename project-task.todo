@@ -14,17 +14,17 @@ Achievements Scene:
     Background:
         ✔ Randomly generated dots (stars) @done (5/5/2026, 4:19:34 PM)
     UI:
-        ☐ Back Button
+        ✔ Back Button @done (5/8/2026, 1:13:59 PM)
         ☐ List of achievements with icons and descriptions
     Functionality:
-        ☐ Back Button
+        ✔ Back Button to go back to previous scene @done (5/8/2026, 1:13:48 PM)
         ☐ Display achievements based on player's progress (e.g. mining asteroids, collecting resources, upgrading spaceship, etc.)
         ☐ Add icons and descriptions for each achievement
 Settings Scene:
     Background:
         ✔ Randomly generated dots (stars) @done (5/5/2026, 4:19:34 PM)
     UI:
-        ☐ Back Button
+        ✔ Back Button @done (5/8/2026, 1:13:45 PM)
         ☐ Volume Slider
         ☐ Music Toggle
         ☐ Auto-save Delay Slider

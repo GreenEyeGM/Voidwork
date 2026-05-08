@@ -11,6 +11,11 @@ export class AchievementsScene extends Phaser.Scene {
     }
 
     create() {
+        // Play click sound on any button click
+        this.input.on('gameobjectdown', (pointer, gameObject) => {
+        this.sound.play('click', { volume: 0.5 });
+        });
+
         // Semi-transparent background
         this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5).setOrigin(0);
 
@@ -33,5 +38,13 @@ export class AchievementsScene extends Phaser.Scene {
             this.scene.stop(); // Stop the pause scene
             this.scene.resume(this.callerScene); // Resume the game scene
         });
+
+        // Achievements list
+        const PLAY_ICON = this.add.sprite(-280, -150, 'AchievementIcons', 0).setOrigin(0.5).setScale(0.4); // 
+        menuContainer.add(PLAY_ICON);
+        const PLAY_TEXT = this.add.text(-280, -100, 'Play the game', { fontFamily: 'Upheaval', fontSize: '20px', fill: '#fff' }).setOrigin(0.5);
+        menuContainer.add(PLAY_TEXT);
+
+        // Need to add more achievements here ...
     }
 }

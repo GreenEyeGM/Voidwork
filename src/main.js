@@ -31,6 +31,6 @@ const config = {
         volume: 1,
         rate: 1
     },
-    };
+};
 
 const game = new Phaser.Game(config);

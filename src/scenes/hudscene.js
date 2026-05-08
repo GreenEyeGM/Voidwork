@@ -7,6 +7,11 @@ export class HudScene extends Phaser.Scene {
     }
     
     create() {
+        // Play click sound on any button click
+        this.input.on('gameobjectdown', (pointer, gameObject) => {
+        this.sound.play('click', { volume: 0.5 });
+        });
+
         // // Add HUD icons
         const HUD_ICONS = [];
         // Formula : X = gameWidth - index * (iconWidth + padding) Y = 10 (fixed Y position)
@@ -23,6 +28,7 @@ export class HudScene extends Phaser.Scene {
             index++;
         });
         HUD_ICONS[0].on('pointerdown', () => {
+            this.sound.stopAll();
             this.scene.stop('GameScene');
             this.scene.stop('HudScene'); // Stop the HUD scene
             this.scene.start('MainMenuScene'); // Start the main menu scene
