@@ -96,15 +96,6 @@ export class GameScene extends Phaser.Scene {
             this.sound.play('collectResources', { volume: 0.5 });
             console.log(`Total Minerals: ${this.mineralCount} | Total Alloys: ${this.alloyCount}`);
         });
- 
-        // ESC key to Pause the game
-        this.input.keyboard.on('keydown-ESC', () => {
-            console.log('ESC pressed, pausing game');
-            this.scene.pause('GameScene');
-            this.scene.pause('HudScene'); // Stop the HUD scene
-            this.scene.launch('PauseScene'); // Launch the pause menu scene
-        });
- 
     }
  
     spawnAsteroid() {

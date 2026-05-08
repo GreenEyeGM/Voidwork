@@ -61,6 +61,7 @@ export class PauseScene extends Phaser.Scene {
         mainMenuButton.on('pointerdown', () => {
             this.sound.stopAll();
             this.scene.stop('GameScene'); // Stop the game scene
+            this.scene.stop('HudScene'); // Stop the HUD scene
             this.scene.stop(); // Stop the pause scene
             this.scene.start('MainMenuScene'); // Start the main menu scene
         });

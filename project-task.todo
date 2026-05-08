@@ -29,7 +29,7 @@ Settings Scene:
         ☐ Music Toggle
         ☐ Auto-save Delay Slider
     Functionality:
-        ☐ Back Button functionality to return to Main Menu
+        ✔ Back Button functionality to return to Main Menu @done (5/8/2026, 3:56:51 PM)
         ☐ Volume Slider functionality to adjust game volume
         ☐ Music Toggle functionality to turn background music on/off
         ☐ Auto-save Delay Slider functionality to adjust the delay between auto-saves (e.g. 1 minute, 5 minutes, 10 minutes, etc.)
@@ -54,20 +54,20 @@ Core Gameplay:
         ✔ Asteroid Counter @done (5/7/2026, 8:56:12 PM)
         ✔ Resource Counter @done (5/7/2026, 8:56:12 PM)
     Audio:
-        ☐ Background Music
-        ☐ Mining Sound Effect
-        ☐ Resource Collection Sound Effect
+        ✔ Background Music @done (5/8/2026, 3:56:36 PM)
+        ✔ Mining Sound Effect @done (5/8/2026, 3:56:36 PM)
+        ✔ Resource Collection Sound Effect @done (5/8/2026, 3:56:37 PM)
         ☐ Upgrade Sound Effect
         ☐ Skill tree sound effect
-        ☐ Click sound effect for buttons
+        ✔ Click sound effect for buttons @done (5/8/2026, 3:56:40 PM)
         ☐ Pause lowers/mutes music and sound effects, unpause restores them
     Mechanics:
-        ☐ Click to mine asteroids
-        ☐ Click to collect resources (debris from destroyed asteroids)
+        ✔ Click to mine asteroids @done (5/8/2026, 3:56:19 PM)
+        ✔ Click to collect resources (debris from destroyed asteroids) @done (5/8/2026, 3:56:21 PM)
         ☐ Upgrade spaceship with resources
         ☐ Add points to skilltree with resources
         ☐ Add achievements for reaching certain milestones (e.g. mining 1,10,50,200,500,1000 asteroids, collecting 10,100,500,1000 resources, upgrading spaceship to level 5, etc.)
-        ☐ Add more asteroid types with different properties (e.g. health, resource yield, etc.)
+        ✔ Add more asteroid types with different properties (e.g. health, resource yield, etc.) @done (5/8/2026, 3:56:30 PM)
         ☐ Asteroids should spawn randomly and move across the screen, with increasing difficulty after each prestige/level (e.g. faster speed, more health, etc.)
         ☐ Add more spaceship upgrades (e.g. faster mining, more resources per click, auto mine, auto collect, etc.)
         ☐ Add more skill tree nodes (e.g. increase resource yield, decrease resource consumption, etc.)
