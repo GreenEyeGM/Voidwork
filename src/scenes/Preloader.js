@@ -26,8 +26,11 @@ export class Preloader extends Phaser.Scene {
         // Load the music for the game scene
         this.load.audio('gameMusic1', '../assets/audio/music/voidwork_creepy_mystery.mp3');
         this.load.audio('gameMusic2', '../assets/audio/music/voidwork_dark_suspense.mp3');
-
-
+        this.load.audio('gameMusic3', '../assets/audio/music/voidwork_dramatic_eerie.mp3');
+        this.load.audio('gameMusic4', '../assets/audio/music/voidwork_synth.mp3');
+        this.load.audio('gameMusic5', '../assets/audio/music/voidwork_timeflow.mp3');
+        
+        
         // Load all the SFX
         this.load.audio('click', '../assets/audio/sfx/voidwork_click.mp3');
         this.load.audio('asteroidDestroyed', '../assets/audio/sfx/voidwork_destroy.mp3');

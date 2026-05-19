@@ -315,7 +315,7 @@ All state persists in a single JSON object under `localStorage['voidwork_save']`
 - Volume: 1.0 by default
 
 **Gameplay:**
-- Track: `gameMusic1` or `gameMusic2` (random pick, different from main menu)
+- Track: `gameMusic1`, `gameMusic2`, `gameMusic3`, `gameMusic4`, `gameMusic5` (random pick, different from main menu)
 - Loop: Yes
 - Volume: 0.8 by default (slightly quieter than SFX)
 - Pause behavior: Fade to 0 (muted) when paused, restore on resume
