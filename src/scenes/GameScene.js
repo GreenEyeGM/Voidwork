@@ -13,8 +13,11 @@ export class GameScene extends Phaser.Scene {
         this.sound.play('click', { volume: 0.5 });
         });
 
-        //Game music
-        this.sound.play('gameMusic2', {volume: 0.1, loop: true});
+        // Music playlist — shuffled, fade in/out between tracks
+        this.musicPlaylist = Phaser.Utils.Array.Shuffle(['gameMusic1', 'gameMusic2', 'gameMusic3', 'gameMusic4', 'gameMusic5']);
+        this.musicIndex = 0;
+        this.currentMusic = null;
+        this.playNextTrack();
 
         createBackground(this, 200, 100, 50);
         this.scene.launch('HudScene').bringToTop('HudScene'); // Launch the HUD scene on top of the game scene
@@ -98,6 +101,36 @@ export class GameScene extends Phaser.Scene {
         });
     }
  
+    playNextTrack() {
+        const key = this.musicPlaylist[this.musicIndex];
+        const music = this.sound.add(key, { volume: 0 });
+        this.currentMusic = music;
+        music.play();
+
+        // Fade in
+        this.tweens.add({ targets: music, volume: 0.1, duration: 2000, ease: 'Linear' });
+
+        // Schedule fade-out 3s before the track ends, then chain to next track
+        const fadeDelay = Math.max(0, (music.duration - 3) * 1000);
+        this.musicFadeTimer = this.time.delayedCall(fadeDelay, () => {
+            this.tweens.add({
+                targets: music,
+                volume: 0,
+                duration: 3000,
+                ease: 'Linear',
+                onComplete: () => {
+                    music.destroy();
+                    this.musicIndex++;
+                    if (this.musicIndex >= this.musicPlaylist.length) {
+                        this.musicPlaylist = Phaser.Utils.Array.Shuffle(this.musicPlaylist);
+                        this.musicIndex = 0;
+                    }
+                    this.playNextTrack();
+                }
+            });
+        });
+    }
+
     spawnAsteroid() {
     if (this.asteroidCount >= this.maxAsteroids) return;
     // Spawn from a random edge of the screen

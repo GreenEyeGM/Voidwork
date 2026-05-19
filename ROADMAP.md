@@ -15,6 +15,40 @@ Prioritized feature areas and concrete tasks. Use this to pick what to code next
 
 These prevent other work from proceeding cleanly.
 
+### Refactor: AudioManager + Fix Audio Bugs
+
+Centralise all audio into `src/systems/AudioManager.js`. This fixes both bugs below as a side effect and prevents new audio bugs as the project grows.
+
+**Why a full AudioManager (not music-only):**
+All audio through one module means volume and mute state live in one place. The music-only approach leaves SFX volume scattered across 5 scenes and will drift. The extra refactor is ~30 min and pays off immediately.
+
+- [ ] Create `src/systems/AudioManager.js`
+  - Singleton module (exported object, not a class)
+  - Holds: `musicVolume`, `sfxVolume`, `musicEnabled`, current music object, playlist state
+  - Reads initial state from `SaveSystem.load().settings` on first call
+  - Methods:
+    - `startGameMusic(scene)` — starts shuffled playlist with fade in/out (moves logic out of GameScene)
+    - `startMenuMusic(scene)` — plays mainMenu1/2 (moves logic out of MainMenuScene)
+    - `stopMusic()` — fades out and destroys current track
+    - `playSfx(scene, key)` — plays SFX at `sfxVolume`, replaces all `this.sound.play()` SFX calls
+    - `setMusicVolume(v)` — updates `musicVolume`, applies to current track
+    - `setSfxVolume(v)` — updates `sfxVolume`
+    - `toggleMusic()` — mutes/unmutes, persists to SaveSystem, **and applies to future tracks** (fixes mute bug)
+  > Note: Tweens and timers still need a scene reference — pass `scene` into `startGameMusic()` and store it on the manager for use in fade callbacks.
+
+- [ ] Replace all `this.sound.play(sfxKey, ...)` calls in every scene with `AudioManager.playSfx(scene, key)`
+  - Scenes affected: `GameScene`, `HudScene`, `PauseMenuScene`, `AchievementsScene`, `SettingsScene`, `MainMenuScene`
+
+- [ ] Update `SettingsScene.js` sliders to call `AudioManager` methods instead of `this.sound.volume`
+  - Music volume slider → `AudioManager.setMusicVolume(t)`
+  - SFX volume slider → `AudioManager.setSfxVolume(t)`
+  - Music toggle → `AudioManager.toggleMusic()`
+
+- [ ] Add `musicVolume` (default: `0.1`) and `sfxVolume` (default: `0.5`) to `SaveSystem.js` defaults
+  - Remove old `volume` key from defaults (replaced by the two above)
+
+---
+
 ### Button Hitbox Bug
 
 - [x] Fix Main Menu buttons — interactive area extends beyond visible icon (Circle r=44 at frame center 64,64)
@@ -38,21 +72,8 @@ Settings UI scaffolding exists but sliders don't do anything. This unblocks Sett
 
 All 5 tracks loaded (`gameMusic1`–`gameMusic5`). Currently GameScene loops `gameMusic2` only.
 
-- [ ] Replace single looping track with a shuffled playlist that cycles through all 5 game tracks
-  - File: `src/scenes/GameScene.js`
-  - Tracks: `['gameMusic1', 'gameMusic2', 'gameMusic3', 'gameMusic4', 'gameMusic5']`
-  - Shuffle with `Phaser.Utils.Array.Shuffle([...keys])` on scene start
-  - Each track: start at `volume: 0`, fade in to `0.1` over 2s using `this.tweens`
-  - Near end: use `this.time.delayedCall((music.duration - 3) * 1000, ...)` to schedule a 3s fade out to `volume: 0`
-  - On fade complete: `music.destroy()`, advance index, play next track
-  - Loop playlist: when last track ends, reshuffle and start again
-  > Note: `music.duration` is in seconds and is available after `play()` is called.
-  > Note: Store the active music object on `this.currentMusic` so PauseScene/HudScene back button can stop it cleanly with `this.currentMusic?.destroy()`.
-
-- [ ] Update `MUSIC_KEYS` in `SettingsScene.js` to include all 5 game tracks
-  - File: `src/scenes/SettingsScene.js`, line 4
-  - Change: add `'gameMusic3'`, `'gameMusic4'`, `'gameMusic5'` to the array
-  - Why: music toggle currently only mutes tracks 1 and 2
+- [x] Shuffled playlist cycling all 5 game tracks with fade in (2s) and fade out (3s before end)
+- [x] Updated `MUSIC_KEYS` in SettingsScene to include all 5 game tracks
 
 ---
 
