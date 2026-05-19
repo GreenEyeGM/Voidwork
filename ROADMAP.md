@@ -28,26 +28,31 @@ These prevent other work from proceeding cleanly.
 
 Settings UI scaffolding exists but sliders don't do anything. This unblocks Settings persistence.
 
-- [ ] Volume slider (range: 0.0–1.0, controls `this.sound.volume`)
-  - File: `src/scenes/SettingsScene.js`
-  - Behavior: Drag horizontally, show numeric value (0–100%)
-  - Save: Call `SaveSystem.save(gameState.settings)` on slider release
-  - Spec: See DESIGN.md (Audio Design section)
+- [x] Volume slider (drag track, shows 0–100%, saves to localStorage)
+- [x] Music toggle (ON/OFF, mutes music keys only via `sound.mute`, saves)
+- [x] Auto-save delay (3 options: 1/5/10 min, saves to localStorage)
 
-- [ ] Music toggle (mute/unmute music tracks only, not SFX)
-  - File: `src/scenes/SettingsScene.js`
-  - Behavior: Toggle button, show "Music: ON/OFF"
-  - Effect: When ON, music plays. When OFF, all music muted (`this.sound.mute = true` for music layer only)
-  > Note: Need to clarify music vs SFX in sound manager. Phaser doesn't have audio groups by default; may need to tag music tracks separately in Preloader.
-  - Save: Call `SaveSystem.save(gameState.settings.musicEnabled)`
+---
 
-- [ ] Auto-save delay slider (options: 1 min, 5 min, 10 min)
-  - File: `src/scenes/SettingsScene.js`
-  - UI: Radio buttons or dropdown (not a traditional slider; label it clearly)
-  - Current default: 5 minutes (300,000 ms)
-  - Behavior: Change affects future auto-saves, not retroactively
-  - Save: Call `SaveSystem.save(gameState.settings.autoSaveDelay)`
-  > Note: GameScene must read this value on boot and set its auto-save interval accordingly.
+### Game Music Playlist with Fade
+
+All 5 tracks loaded (`gameMusic1`–`gameMusic5`). Currently GameScene loops `gameMusic2` only.
+
+- [ ] Replace single looping track with a shuffled playlist that cycles through all 5 game tracks
+  - File: `src/scenes/GameScene.js`
+  - Tracks: `['gameMusic1', 'gameMusic2', 'gameMusic3', 'gameMusic4', 'gameMusic5']`
+  - Shuffle with `Phaser.Utils.Array.Shuffle([...keys])` on scene start
+  - Each track: start at `volume: 0`, fade in to `0.1` over 2s using `this.tweens`
+  - Near end: use `this.time.delayedCall((music.duration - 3) * 1000, ...)` to schedule a 3s fade out to `volume: 0`
+  - On fade complete: `music.destroy()`, advance index, play next track
+  - Loop playlist: when last track ends, reshuffle and start again
+  > Note: `music.duration` is in seconds and is available after `play()` is called.
+  > Note: Store the active music object on `this.currentMusic` so PauseScene/HudScene back button can stop it cleanly with `this.currentMusic?.destroy()`.
+
+- [ ] Update `MUSIC_KEYS` in `SettingsScene.js` to include all 5 game tracks
+  - File: `src/scenes/SettingsScene.js`, line 4
+  - Change: add `'gameMusic3'`, `'gameMusic4'`, `'gameMusic5'` to the array
+  - Why: music toggle currently only mutes tracks 1 and 2
 
 ---
 
