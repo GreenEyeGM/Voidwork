@@ -17,7 +17,8 @@ export class HudScene extends Phaser.Scene {
         // Formula : X = gameWidth - index * (iconWidth + padding) Y = 10 (fixed Y position)
         const START_X = GAME_WIDTH - (90 + 10)*4; // Start from the right edge with padding
         for (let i = 0; i < 4; i++) {
-            let icon = this.add.sprite(START_X +(i*(90+10)), 10, 'HUDIcons', i).setInteractive({useHandCursor: true}).setOrigin(0,0);
+            let icon = this.add.sprite(START_X +(i*(90+10)), 10, 'HUDIcons', i).setOrigin(0, 0)
+                .setInteractive({ hitArea: new Phaser.Geom.Rectangle(8, 8, 74, 92), hitAreaCallback: Phaser.Geom.Rectangle.Contains, useHandCursor: true });
             HUD_ICONS.push(icon);
         }
 

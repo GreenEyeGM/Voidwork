@@ -17,13 +17,8 @@ These prevent other work from proceeding cleanly.
 
 ### Button Hitbox Bug
 
-- [ ] Fix Main Menu buttons — interactive area extends beyond visible icon
-  - Buttons: Play, Settings, Achievements
-  - Current: clickable in a large square around icon
-  - Target: clickable only on the icon itself (tighten hitbox)
-  - Solution: Use `setSize(w, h)` after `setInteractive()` to match sprite dimensions
-  - File: `src/scenes/MainMenuScene.js`
-  > Note: Check if same issue exists in HUD buttons (Back, Settings, Achievements, Spaceship). Fix all at once.
+- [x] Fix Main Menu buttons — interactive area extends beyond visible icon (Circle r=44 at frame center 64,64)
+- [x] Fix HUD buttons — tightened to Rectangle (8,8,74,92) within 90×108 frame
 
 ---
 

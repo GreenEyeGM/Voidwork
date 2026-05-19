@@ -23,7 +23,8 @@ export class MainMenuScene extends Phaser.Scene {
         let titleText = this.add.text(GAME_CENTER_X, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
         
         //#region Add play button and text
-        let playButton = this.add.sprite(GAME_CENTER_X + 32, 400, 'mainMenuButtons', 0).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        let playButton = this.add.sprite(GAME_CENTER_X + 32, 400, 'mainMenuButtons', 0).setOrigin(0.5)
+            .setInteractive({ hitArea: new Phaser.Geom.Circle(64, 64, 30), hitAreaCallback: Phaser.Geom.Circle.Contains, useHandCursor: true });
         
         // Add Text next to play button
         let playText = this.add.text(GAME_CENTER_X - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
@@ -45,7 +46,8 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
         
         //#region Add achievements button and text
-        let achievementsButton = this.add.sprite(GAME_CENTER_X + 32, 480, 'mainMenuButtons', 6).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        let achievementsButton = this.add.sprite(GAME_CENTER_X + 32, 480, 'mainMenuButtons', 6).setOrigin(0.5)
+            .setInteractive({ hitArea: new Phaser.Geom.Circle(64, 64, 30), hitAreaCallback: Phaser.Geom.Circle.Contains, useHandCursor: true });
         
         // Add Text next to achievements button
         let achievementsText = this.add.text(GAME_CENTER_X - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
@@ -67,7 +69,8 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
 
         //#region Add settings button and text
-        let settingsButton = this.add.sprite(GAME_CENTER_X + 32, 560, 'mainMenuButtons', 5).setInteractive({useHandCursor: true}).setOrigin(0.5);
+        let settingsButton = this.add.sprite(GAME_CENTER_X + 32, 560, 'mainMenuButtons', 5).setOrigin(0.5)
+            .setInteractive({ hitArea: new Phaser.Geom.Circle(64, 64, 30), hitAreaCallback: Phaser.Geom.Circle.Contains, useHandCursor: true });
         
         // Add Text next to settings button
         let settingsText = this.add.text(GAME_CENTER_X - 149, 560, 'Settings', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);

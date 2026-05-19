@@ -101,8 +101,8 @@ export class Asteroid extends Phaser.GameObjects.Sprite {
         const angle = Phaser.Math.Between(0, 360);
         this.scene.physics.velocityFromAngle(angle, speed, this.body.velocity);
  
-        // Allow this sprite to receive pointer events
-        this.setInteractive({ useHandCursor: true });
+        // Allow this sprite to receive pointer events — circle matches visible asteroid, not full 128×128 frame
+        this.setInteractive({ hitArea: new Phaser.Geom.Circle(64, 64, 48), hitAreaCallback: Phaser.Geom.Circle.Contains, useHandCursor: true });
  
         // Each click calls takeDamage
         this.on('pointerdown', () => {
