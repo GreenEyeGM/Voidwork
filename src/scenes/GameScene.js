@@ -1,111 +1,101 @@
 import { createBackground } from "../utils/Background.js";
 import { Asteroid, getRandomAsteroidType } from '../objects/Asteroid.js';
 import { AudioManager } from '../systems/AudioManager.js';
+import { SaveSystem } from '../systems/SaveSystem.js';
+import { AchievementSystem } from '../systems/AchievementSystem.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
         console.log('GameScene loaded');
     }
-    
+
     create() {
-        // Play click sound on any button click
+        // Load saved game state (or defaults for a new game)
+        this.gameState = SaveSystem.load();
+
+        // Play click SFX on any interactive object press
         this.input.on('gameobjectdown', () => AudioManager.playSfx(this, 'click'));
 
         AudioManager.startGameMusic(this);
 
         createBackground(this, 200, 100, 50);
-        this.scene.launch('HudScene').bringToTop('HudScene'); // Launch the HUD scene on top of the game scene
+        this.scene.launch('HudScene').bringToTop('HudScene');
 
         // ── RESOURCE COUNTERS ─────────────────────────────────
-        // Starting values
-        this.destroyedCount = 0;
-        this.mineralCount = 0;
-        this.alloyCount = 0;
-
-        // Text style shared across all three counters
         const textStyle = {
-            fontSize:   '18px',
-            fill:       '#ffffff',
-            fontFamily: 'Upheaval',
-            stroke:     '#000000',  // black outline so it reads on any background
+            fontSize:        '18px',
+            fill:            '#ffffff',
+            fontFamily:      'Upheaval',
+            stroke:          '#000000',
             strokeThickness: 4
         };
 
-        // Create the three text objects, stacked on top left
-        this.txtDestroyed = this.add.text(16, 16, 'Asteroids Destroyed: 0', textStyle);
-        this.txtMinerals = this.add.text(16, 42, 'Minerals: 0', textStyle);
-        this.txtAlloys = this.add.text(16, 68, 'Alloys: 0', textStyle);
+        this.txtDestroyed = this.add.text(16, 16, `Asteroids Destroyed: ${this.gameState.stats.asteroidsDestroyed}`, textStyle);
+        this.txtMinerals  = this.add.text(16, 42, `Minerals: ${this.gameState.resources.minerals}`, textStyle);
+        this.txtAlloys    = this.add.text(16, 68, `Alloys: ${this.gameState.resources.alloys}`, textStyle);
 
-        // ESC key to Pause the game
+        // ── ESC → PAUSE ───────────────────────────────────────
         this.input.keyboard.on('keydown-ESC', () => {
-            console.log('ESC pressed, pausing game');
             this.scene.pause('GameScene');
-            this.scene.pause('HudScene'); // Stop the HUD scene
-            this.scene.launch('PauseScene'); // Launch the pause menu scene
+            this.scene.pause('HudScene');
+            this.scene.launch('PauseScene');
         });
- 
+
         // ── EVENTS ───────────────────────────────────────────
-        // Asteroid.js emits 'asteroidDestroyed' when it dies
         this.events.on('asteroidDestroyed', () => {
             AudioManager.playSfx(this, 'asteroidDestroyed');
-            this.destroyedCount++;
-            this.txtDestroyed.setText(`Asteroids Destroyed: ${this.destroyedCount}`);
-        });
- 
-        // Asteroid.js emits 'collectResources' when a chunk is clicked
-        this.events.on('collectResources', (data) => {
-            this.mineralCount += data.minerals;
-            this.alloyCount += data.alloys;
-            this.txtMinerals.setText(`Minerals: ${this.mineralCount}`);
-            this.txtAlloys.setText(`Alloys: ${this.alloyCount}`);
-        });
- 
-        // ── ASTEROIDS ─────────────────────────────────────────
-        this.asteroidCount = 0;
-        this.maxAsteroids  = 6;
- 
-        for (let i = 0; i < this.maxAsteroids; i++) {
-            this.spawnAsteroid();
-        }
- 
-        this.events.on('asteroidDestroyed', () => {
+
+            this.gameState.stats.asteroidsDestroyed++;
+            this.txtDestroyed.setText(`Asteroids Destroyed: ${this.gameState.stats.asteroidsDestroyed}`);
+
+            this.checkAndUnlockAchievements();
+            SaveSystem.save(this.gameState);
+
+            // Respawn after a short delay
             this.asteroidCount--;
-            this.time.delayedCall(3000, () => {
-                this.spawnAsteroid();
-            });
-        });
- 
-        // Spawn initial 6 asteroids
-        for (let i = 0; i < this.maxAsteroids; i++) {
-            this.spawnAsteroid();
-        }
- 
-        // When one dies, spawn a replacement after a delay
-        this.events.on('asteroidDestroyed', () => {
-            this.asteroidCount--;
-            this.time.delayedCall(3000, () => {
-                this.spawnAsteroid();
-            });
+            this.time.delayedCall(3000, () => this.spawnAsteroid());
         });
 
-        // Debug log to check resource counts when collected
         this.events.on('collectResources', (data) => {
             AudioManager.playSfx(this, 'collectResources');
-            console.log(`Total Minerals: ${this.mineralCount} | Total Alloys: ${this.alloyCount}`);
-        });
-    }
- 
-    spawnAsteroid() {
-    if (this.asteroidCount >= this.maxAsteroids) return;
-    // Spawn from a random edge of the screen
-    const W = this.scale.width;
-    const H = this.scale.height;
-    const x = Phaser.Math.Between(0, W);
-    const y = Phaser.Math.Between(0, H);
-    const type = getRandomAsteroidType();
 
-    new Asteroid(this, x, y, type);
-    this.asteroidCount++;
+            this.gameState.resources.minerals += data.minerals;
+            this.gameState.resources.alloys   += data.alloys;
+            this.gameState.stats.resourcesCollected += data.minerals + data.alloys;
+
+            this.txtMinerals.setText(`Minerals: ${this.gameState.resources.minerals}`);
+            this.txtAlloys.setText(`Alloys: ${this.gameState.resources.alloys}`);
+
+            this.checkAndUnlockAchievements();
+            SaveSystem.save(this.gameState);
+        });
+
+        // ── ASTEROIDS ─────────────────────────────────────────
+        this.asteroidCount = 0;
+        this.maxAsteroids  = 5;
+
+        for (let i = 0; i < this.maxAsteroids; i++) {
+            this.spawnAsteroid();
+        }
+    }
+
+    // Checks for newly earned achievements and unlocks them.
+    checkAndUnlockAchievements() {
+        const newlyUnlocked = AchievementSystem.checkMilestones(this.gameState);
+        if (newlyUnlocked.length > 0) {
+            AchievementSystem.unlockMultiple(newlyUnlocked, this.gameState, this);
+            SaveSystem.save(this.gameState);
+        }
+    }
+
+    spawnAsteroid() {
+        if (this.asteroidCount >= this.maxAsteroids) return;
+        const W = this.scale.width;
+        const H = this.scale.height;
+        const x = Phaser.Math.Between(0, W);
+        const y = Phaser.Math.Between(0, H);
+        new Asteroid(this, x, y, getRandomAsteroidType());
+        this.asteroidCount++;
     }
 }

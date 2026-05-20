@@ -262,9 +262,9 @@ All state persists in a single JSON object under `localStorage['voidwork_save']`
 
   // Settings (persist across sessions)
   settings: {
-    volume: 0.8,                   // 0.0–1.0
+    musicVolume: 0.1,              // 0.0–1.0 (controls music track volume via AudioManager)
+    sfxVolume: 0.5,                // 0.0–1.0 (controls SFX volume via AudioManager)
     musicEnabled: true,
-    sfxEnabled: true,
     autoSaveDelay: 300000          // ms (5 minutes)
   },
 
@@ -288,6 +288,25 @@ All state persists in a single JSON object under `localStorage['voidwork_save']`
 - **Trigger:** Timer-based, fires periodically. Also fires on major events (upgrade, prestige, achievement unlock).
 - **Behavior:** Overwrites previous save. No versioning, no backup slots.
 
+### Reset Behavior
+
+**Triggered by:** "Reset Game" button in PauseScene (requires confirmation).
+
+**What resets:** Everything — resources, stats, achievements, spaceship, skill tree, prestige. The save key is removed from localStorage entirely and a fresh default state is written on next boot.
+
+**What does NOT reset:** Nothing is preserved. This is a full wipe, equivalent to a new install.
+
+**Flow:**
+1. Player clicks "Reset Game" in PauseScene
+2. Confirmation prompt appears: *"Reset all progress? This cannot be undone."*
+3. Player clicks "Yes, Reset"
+4. `SaveSystem.reset()` — removes `localStorage['voidwork_save']`
+5. `AudioManager.stopMusic()` — silence before transition
+6. All active scenes stopped
+7. `scene.start('MainMenuScene')` — boot fresh as if launching for the first time
+
+**UI design principle:** The reset button must be visually distinct (red text) and always require a two-step confirmation. There is no undo.
+
 ### Save/Load Behavior
 
 **On game boot:**
@@ -310,15 +329,15 @@ All state persists in a single JSON object under `localStorage['voidwork_save']`
 ### Music
 
 **Main Menu:**
-- Track: `mainMenu1` or `mainMenu2` (random pick)
-- Loop: Yes
-- Volume: 1.0 by default
+- Track: `mainMenu1` (fades into `mainMenu2` on completion, cycles)
+- Volume: `musicVolume` from settings (default `0.1`), managed by `AudioManager`
+- Fade in: 2s on start
 
 **Gameplay:**
-- Track: `gameMusic1`, `gameMusic2`, `gameMusic3`, `gameMusic4`, `gameMusic5` (random pick, different from main menu)
-- Loop: Yes
-- Volume: 0.8 by default (slightly quieter than SFX)
-- Pause behavior: Fade to 0 (muted) when paused, restore on resume
+- Track: `gameMusic1`–`gameMusic5`, shuffled playlist
+- Volume: `musicVolume` from settings (default `0.1`), managed by `AudioManager`
+- Fade in: 2s, fade out: 3s before track ends, then next track plays
+- Pause behavior: Fade to 0 (muted) when paused, restore on resume — TBD (not yet implemented)
 
 ### Sound Effects
 
@@ -327,15 +346,16 @@ All state persists in a single JSON object under `localStorage['voidwork_save']`
 | Button click | `click` | 0.6 | All buttons in all scenes |
 | Asteroid destroyed | `asteroidDestroyed` | 0.7 | Asteroid breaks into chunks |
 | Resource collected | `collectResources` | 0.7 | Player clicks a chunk |
-| Upgrade purchased | `upgrade` | 0.8 | New feature: wire up in UpgradeScene |
-| Skill node unlocked | `skillTreeUnlock` | 0.8 | New feature: wire up in SkillTreeScene |
-| Achievement unlocked | `achievementUnlocked` | 0.9 | Louder, more celebratory |
+| Upgrade purchased | `upgrade` | 0.8 | New feature: wire up in UpgradeScene — `AudioManager.playSfx(scene, 'upgrade')` |
+| Skill node unlocked | `skillTreeUnlock` | 0.8 | New feature: wire up in SkillTreeScene — `AudioManager.playSfx(scene, 'skillTreeUnlock')` |
+| Achievement unlocked | `achievementUnlocked` | `sfxVolume` | Played by `AchievementSystem.unlockMultiple()` via `AudioManager.playSfx()` |
 
 ### Settings
 
-- **Volume slider:** Controls global `this.sound.volume` (0.0–1.0)
-- **Music toggle:** Mutes/unmutes music tracks only, not SFX
-- **Pause audio:** When game pauses (ESC key), all audio fades to 0; resumes on unpause
+- **Music volume slider:** Calls `AudioManager.setMusicVolume(v)` — applies live to current track and persists to SaveSystem
+- **SFX volume slider:** Calls `AudioManager.setSfxVolume(v)` — applies to all future `playSfx()` calls
+- **Music toggle:** Calls `AudioManager.toggleMusic()` — mutes/unmutes current track and persists
+- **Pause audio:** When game pauses (ESC key), all audio fades to 0; resumes on unpause — TBD (not yet implemented)
 
 ---
 

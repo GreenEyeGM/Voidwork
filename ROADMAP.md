@@ -15,79 +15,17 @@ Prioritized feature areas and concrete tasks. Use this to pick what to code next
 
 These prevent other work from proceeding cleanly.
 
-### Refactor: AudioManager + Fix Audio Bugs
-
-Centralise all audio into `src/systems/AudioManager.js`. This fixes both bugs below as a side effect and prevents new audio bugs as the project grows.
-
-**Why a full AudioManager (not music-only):**
-All audio through one module means volume and mute state live in one place. The music-only approach leaves SFX volume scattered across 5 scenes and will drift. The extra refactor is ~30 min and pays off immediately.
-
-- [x] Create `src/systems/AudioManager.js`
-  - Singleton module (exported object, not a class)
-  - Holds: `musicVolume`, `sfxVolume`, `musicEnabled`, current music object, playlist state
-  - Reads initial state from `SaveSystem.load().settings` on first call
-  - Methods:
-    - `startGameMusic(scene)` — starts shuffled playlist with fade in/out (moves logic out of GameScene)
-    - `startMenuMusic(scene)` — plays mainMenu1/2 (moves logic out of MainMenuScene)
-    - `stopMusic()` — fades out and destroys current track
-    - `playSfx(scene, key)` — plays SFX at `sfxVolume`, replaces all `this.sound.play()` SFX calls
-    - `setMusicVolume(v)` — updates `musicVolume`, applies to current track
-    - `setSfxVolume(v)` — updates `sfxVolume`
-    - `toggleMusic()` — mutes/unmutes, persists to SaveSystem, **and applies to future tracks** (fixes mute bug)
-  > Note: Tweens and timers still need a scene reference — pass `scene` into `startGameMusic()` and store it on the manager for use in fade callbacks.
-
-- [x] Replace all `this.sound.play(sfxKey, ...)` calls in every scene with `AudioManager.playSfx(scene, key)`
-  - Scenes affected: `GameScene`, `HudScene`, `PauseMenuScene`, `AchievementsScene`, `SettingsScene`, `MainMenuScene`
-
-- [x] Update `SettingsScene.js` sliders to call `AudioManager` methods instead of `this.sound.volume`
-  - Music volume slider → `AudioManager.setMusicVolume(t)`
-  - SFX volume slider → `AudioManager.setSfxVolume(t)`
-  - Music toggle → `AudioManager.toggleMusic()`
-
-- [x] Add `musicVolume` (default: `0.1`) and `sfxVolume` (default: `0.5`) to `SaveSystem.js` defaults
-  - Remove old `volume` key from defaults (replaced by the two above)
-
-- [x] Fix music overlap on scene switch (music stacks instead of stopping)
-  - File: `src/systems/AudioManager.js`
-  - Bug: Switching between MainMenuScene and GameScene (in either direction) causes tracks to stack and play simultaneously. Each switch adds another overlapping layer.
-  - Root cause: `stopMusic()` fades out via a scene tween, but `scene.start()` destroys the scene immediately — the tween's `onComplete` never fires, so `music.destroy()` is never called. The old track keeps playing on the global sound manager. `startGameMusic`/`startMenuMusic` then adds a new track on top without clearing the still-playing one.
-  - Fix: At the top of `startMenuMusic()` and `startGameMusic()`, immediately and synchronously destroy `state.currentMusic` if it exists (no fade — the scene transition is the cut). Only use the fade-out tween for the within-game track transitions (the playlist cycling in `playTrack`).
-
----
-
-### Button Hitbox Bug
-
-- [x] Fix Main Menu buttons — interactive area extends beyond visible icon (Circle r=44 at frame center 64,64)
-- [x] Fix HUD buttons — tightened to Rectangle (8,8,74,92) within 90×108 frame
+*(All resolved — see Completed section.)*
 
 ---
 
 ## 🟡 High Priority (Unblock Other Work)
 
-### Settings Scene — Functional Sliders
-
-Settings UI scaffolding exists but sliders don't do anything. This unblocks Settings persistence.
-
-- [x] Volume slider (drag track, shows 0–100%, saves to localStorage)
-- [x] Music toggle (ON/OFF, mutes music keys only via `sound.mute`, saves)
-- [x] Auto-save delay (3 options: 1/5/10 min, saves to localStorage)
-
----
-
-### Game Music Playlist with Fade
-
-All 5 tracks loaded (`gameMusic1`–`gameMusic5`). Currently GameScene loops `gameMusic2` only.
-
-- [x] Shuffled playlist cycling all 5 game tracks with fade in (2s) and fade out (3s before end)
-- [x] Updated `MUSIC_KEYS` in SettingsScene to include all 5 game tracks
-
----
-
 ### Achievements Scene — Display & Functionality
 
 UI scaffolding exists. Need to wire up achievement tracking and unlock notifications.
 
-- [ ] Display full achievements list with icons and descriptions
+- [x] Display full achievements list with icons and descriptions
   - File: `src/scenes/AchievementsScene.js`
   - Source: `AchievementIcons` spritesheet (from Preloader)
   - Data: Define achievement config with descriptions (name, description, icon frame, milestone target)
@@ -108,7 +46,7 @@ UI scaffolding exists. Need to wire up achievement tracking and unlock notificat
   - Layout: Grid or list of achievement icons, show unlock status (locked/unlocked), description on hover/click
   > Note: See DESIGN.md (Achievements section) for full milestone list.
 
-- [ ] Wire achievements to game state — unlock when milestone hit
+- [x] Wire achievements to game state — unlock when milestone hit
   - File: `src/systems/AchievementSystem.js` (create if not exists)
   - Trigger points: GameScene events (`asteroidDestroyed`, `collectResources`, `upgradeApplied`, etc.)
   - Logic: After every stat update, call `AchievementSystem.checkMilestones(gameState)` to see if new achievements unlocked
@@ -119,7 +57,7 @@ UI scaffolding exists. Need to wire up achievement tracking and unlock notificat
     4. Call `SaveSystem.save(gameState)`
   - File: `src/systems/AchievementSystem.js`
 
-- [ ] Implement achievement milestones (from DESIGN.md)
+- [x] Implement achievement milestones (from DESIGN.md)
   - Asteroid milestones: 1, 10, 50, 200, 500, 1000
   - Resource milestones: 10, 100, 500, 1000
   - Spaceship level milestones: 5, 10
@@ -245,13 +183,13 @@ Skill tree is secondary progression (separate from spaceship upgrades).
   - File: `src/lib/assets/audio/upgrade.mp3` (or .ogg)
   - Usage: Play when player buys an upgrade
   - Call site: `UpgradeSystem.apply()` or UpgradeScene after purchase
-  - Code: `this.sound.play('upgrade', { volume: 0.8 })`
+  - Code: `AudioManager.playSfx(scene, 'upgrade')`
 
 - [ ] Add skill tree unlock sound effect
   - File: `src/lib/assets/audio/skillTreeUnlock.mp3` (or .ogg)
   - Usage: Play when player unlocks a skill tree node
   - Call site: SkillTreeScene after unlock
-  - Code: `this.sound.play('skillTreeUnlock', { volume: 0.8 })`
+  - Code: `AudioManager.playSfx(scene, 'skillTreeUnlock')`
 
 - [ ] Pause audio ducking — lower volume when paused
   - File: `src/scenes/PauseScene.js`
@@ -289,6 +227,36 @@ Skill tree is secondary progression (separate from spaceship upgrades).
   - Update: Every hit, reduce bar width proportionally
   - Display: Only show if asteroid health < max (or always visible)
   - Cosmetic: Hide when asteroid destroyed
+
+### Reset Game
+
+Allow the player to wipe all save data and start fresh from the Pause menu.
+
+- [ ] Add "Reset Game" button to PauseScene
+  - File: `src/scenes/PauseMenuScene.js`
+  - Position: Below the "Main Menu" button, styled in red to signal danger
+  - Behavior: Opens an inline confirmation prompt before doing anything destructive
+  - Confirmation UI:
+    - Hide the normal menu buttons
+    - Show text: `"Reset all progress? This cannot be undone."`
+    - Show two buttons: `"Yes, Reset"` (red) and `"Cancel"` (grey)
+    - Cancel → restore normal pause menu buttons, no data touched
+    - Confirm → call `SaveSystem.reset()`, stop all scenes, start `MainMenuScene`
+  > Note: Never reset without a confirmation step — this is permanent and irreversible.
+
+- [ ] Add `reset()` to `SaveSystem.js`
+  - File: `src/systems/SaveSystem.js`
+  - Behavior: Clears `localStorage['voidwork_save']` and returns a fresh default state
+  - Implementation:
+    ```javascript
+    reset() {
+        localStorage.removeItem('voidwork_save');
+        return structuredClone(DEFAULTS);
+    }
+    ```
+  - Call site: PauseScene confirm button → `SaveSystem.reset()` → stop music → restart scenes
+
+---
 
 ### Game Scene Level 1
 
@@ -354,14 +322,12 @@ Skill tree is secondary progression (separate from spaceship upgrades).
 ## 🎯 Task Picking Guide
 
 ### For Quick Wins (< 1 hour)
-- Button hitbox fix
 - Add spaceship sprite to GameScene
 - Audio ducking on pause
 
 ### For Feature Completeness (1–3 hours)
-- Settings Scene sliders (all 3)
-- Achievements display & unlock notifications
 - Spaceship upgrades (core logic)
+- Reset Game button in PauseScene
 
 ### For Big Features (3–8 hours)
 - UpgradeScene modal (display + purchase)
@@ -390,6 +356,11 @@ Skill tree is secondary progression (separate from spaceship upgrades).
 - [x] Audio (background music, click/destruction SFX)
 - [x] Background utility function (no duplication)
 - [x] Scene flow (Preloader → MainMenu → Game → Pause/Settings/Achievements)
+- [x] Button hitbox fix — Main Menu (Circle r=30) and HUD (Rectangle 8,8,74,92)
+- [x] Settings Scene functional sliders — volume, music toggle, auto-save delay (saves to localStorage)
+- [x] Game music shuffled playlist — all 5 tracks with 2s fade in / 3s fade out between tracks
+- [x] AudioManager refactor (`src/systems/AudioManager.js`) — centralised music + SFX, volume/mute state, SaveSystem integration
+- [x] Fix music overlap on scene switch — scene transitions no longer stack tracks
 
 ---
 

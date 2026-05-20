@@ -314,18 +314,25 @@ getFrame() { /* return correct spritesheet frame for type + health */ }
 
 **Responsibility:** Load/save game state to localStorage.
 
+Exported as an **object** (not a class). See API.md for the full schema.
+
 ```javascript
-export class SaveSystem {
-  static load() {
+export const SaveSystem = {
+  load() {
     const data = localStorage.getItem('voidwork_save');
     return data ? JSON.parse(data) : this.getDefaultState();
-  }
+  },
 
-  static save(gameState) {
+  save(gameState) {
+    gameState.lastSavedAt = Date.now();
     localStorage.setItem('voidwork_save', JSON.stringify(gameState));
-  }
+  },
 
-  static getDefaultState() {
+  reset() {
+    localStorage.removeItem('voidwork_save');
+  },
+
+  getDefaultState() {
     return {
       resources: { minerals: 0, alloys: 0 },
       spaceship: { level: 1, upgrades: {} },
@@ -333,10 +340,34 @@ export class SaveSystem {
       // ... see API.md for full schema
     };
   }
-}
+};
 ```
 
 **Used by:** GameScene on boot and every resource change.
+
+---
+
+### AudioManager (AudioManager.js)
+
+**Responsibility:** Single source of truth for all audio — music playback, SFX, volume, and mute state.
+
+Exported as an **object singleton** with private internal state. Reads initial settings from `SaveSystem.load()` on first music start and persists changes back via `SaveSystem.save()`.
+
+```javascript
+export const AudioManager = {
+  startMenuMusic(scene),  // destroys current track, starts mainMenu1/2 cycle
+  startGameMusic(scene),  // destroys current track, starts shuffled game playlist
+  stopMusic(),            // fades out and destroys current track
+  playSfx(scene, key),    // plays a SFX key at sfxVolume
+  setMusicVolume(v),      // live-updates current track + persists to SaveSystem
+  setSfxVolume(v),        // persists to SaveSystem (applies to next playSfx call)
+  toggleMusic(),          // mutes/unmutes current track + persists, returns new boolean state
+};
+```
+
+**Key behaviour:** `startMenuMusic()` and `startGameMusic()` synchronously destroy any currently playing track before starting the new one — prevents music stacking on scene transitions.
+
+**Used by:** All scenes for SFX via `playSfx()`; MainMenuScene and GameScene for music start; HudScene and PauseScene for stopping music on navigation to main menu.
 
 ---
 

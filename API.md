@@ -88,9 +88,9 @@ type VoidworkSave = {
 
   // ===== SETTINGS =====
   settings: {
-    volume: number;                 // 0.0–1.0 (controls this.sound.volume)
-    musicEnabled: boolean;          // true = music on, false = music off
-    sfxEnabled: boolean;            // true = SFX on, false = SFX off
+    musicVolume: number;            // 0.0–1.0 (managed by AudioManager.setMusicVolume)
+    sfxVolume: number;              // 0.0–1.0 (managed by AudioManager.setSfxVolume)
+    musicEnabled: boolean;          // true = music on, false = music off (AudioManager.toggleMusic)
     autoSaveDelay: number;          // ms between auto-saves (e.g., 300000 = 5 min)
   };
 
@@ -155,9 +155,9 @@ const DEFAULT_STATE = {
   },
 
   settings: {
-    volume: 0.8,
+    musicVolume: 0.1,
+    sfxVolume: 0.5,
     musicEnabled: true,
-    sfxEnabled: true,
     autoSaveDelay: 300000  // 5 minutes
   },
 
@@ -421,52 +421,45 @@ const ACHIEVEMENTS = {
 
 ### Achievement Unlock Trigger
 
-How to detect if a milestone is met:
+`src/systems/AchievementSystem.js` is an **exported object** (not a class). It imports `ACHIEVEMENTS` from `AchievementConfig.js` and `AudioManager` for SFX.
+
+Milestone values are resolved via an internal `getMilestoneValue()` helper, because not all milestones live under `gameState.stats` — some point to nested fields:
+
+| milestone key | resolved from |
+|---|---|
+| `asteroidsDestroyed` | `gameState.stats.asteroidsDestroyed` |
+| `resourcesCollected` | `gameState.stats.resourcesCollected` |
+| `spaceshipLevel` | `gameState.spaceship.level` |
+| `prestigeLevel` | `gameState.prestige.level` |
 
 ```javascript
-export class AchievementSystem {
-  static checkMilestones(gameState) {
-    const unlocked = [];
+// Actual pattern — exported object, not a class
+export const AchievementSystem = {
+  // Returns array of newly-unlocked achievement keys. Call after every stat update.
+  checkMilestones(gameState) { /* ... */ },
 
-    for (const [key, config] of Object.entries(ACHIEVEMENTS)) {
-      // Skip already unlocked
-      if (gameState.achievements[key].unlocked) continue;
+  // Marks achievements unlocked, plays SFX, shows toast notification.
+  // scene is required — SFX and tweens need a live Phaser scene reference.
+  unlockMultiple(keys, gameState, scene) { /* ... */ },
 
-      // Check if milestone target reached
-      const currentValue = gameState.stats[config.milestone];
-      if (currentValue >= config.target) {
-        unlocked.push(key);
-      }
-    }
+  // Shows a fading toast at the bottom of the screen for ~2.5s.
+  showNotification(scene, achievementName) { /* ... */ }
+};
+```
 
-    return unlocked;
-  }
+**Call site in GameScene** (implemented — wrapped in `checkAndUnlockAchievements()`):
 
-  static unlockMultiple(achievementKeys, gameState) {
-    achievementKeys.forEach(key => {
-      gameState.achievements[key].unlocked = true;
-      gameState.achievements[key].unlockedAt = Date.now();
-      
-      // Play SFX + show notification
-      this.playUnlockSound();
-      this.showNotification(ACHIEVEMENTS[key].name);
-    });
+```javascript
+checkAndUnlockAchievements() {
+  const newlyUnlocked = AchievementSystem.checkMilestones(this.gameState);
+  if (newlyUnlocked.length > 0) {
+    AchievementSystem.unlockMultiple(newlyUnlocked, this.gameState, this);
+    SaveSystem.save(this.gameState);
   }
 }
 ```
 
-**Call site:** GameScene should call `AchievementSystem.checkMilestones()` after every stat update:
-
-```javascript
-// In GameScene, whenever resources collected:
-this.gameState.stats.resourcesCollected += amount;
-
-const newAchievements = AchievementSystem.checkMilestones(this.gameState);
-if (newAchievements.length > 0) {
-  AchievementSystem.unlockMultiple(newAchievements, this.gameState);
-  SaveSystem.save(this.gameState);
-}
-```
+Call `checkAndUnlockAchievements()` after every `asteroidDestroyed` and `collectResources` event.
 
 ---
 
@@ -648,6 +641,27 @@ this.gameState.prestige.level += 1;
 SaveSystem.save(this.gameState);
 ```
 
+### Resetting Game State
+
+Called from PauseScene when the player confirms a full reset. Wipes localStorage entirely — the next `SaveSystem.load()` will return a fresh default state as if the game was never played.
+
+```javascript
+// src/systems/SaveSystem.js
+reset() {
+    localStorage.removeItem('voidwork_save');
+}
+
+// Call site — PauseScene confirm button:
+SaveSystem.reset();
+AudioManager.stopMusic();
+this.scene.stop('GameScene');
+this.scene.stop('HudScene');
+this.scene.stop('PauseScene');
+this.scene.start('MainMenuScene');
+```
+
+> **Warning:** This is permanent. Do not call without a confirmation step. See DESIGN.md (Reset Behavior) for the required UX flow.
+
 ### Auto-Save Timer
 
 GameScene sets up an auto-save interval:
@@ -666,46 +680,34 @@ this.time.addTimer({
 
 ## SaveSystem Implementation Reference
 
-Template for `src/systems/SaveSystem.js`:
+`src/systems/SaveSystem.js` is an **exported object** (not a class). Defaults are sourced from `AchievementConfig.js` so the achievements list stays in one place.
 
 ```javascript
-export class SaveSystem {
-  static STORAGE_KEY = 'voidwork_save';
+// Actual pattern — exported object, not a class with static methods
+export const SaveSystem = {
+  load() {
+    const raw = localStorage.getItem('voidwork_save');
+    if (!raw) return structuredClone(DEFAULTS);
+    const saved = JSON.parse(raw);
+    // Deep merge so new keys always appear even on old saves
+    return { ...structuredClone(DEFAULTS), ...saved, settings: { ...DEFAULTS.settings, ...saved.settings } };
+  },
 
-  static load() {
-    const json = localStorage.getItem(this.STORAGE_KEY);
-    if (!json) return this.getDefaultState();
-    try {
-      return JSON.parse(json);
-    } catch (e) {
-      console.error('Failed to parse save data:', e);
-      return this.getDefaultState();
-    }
-  }
+  save(data) {
+    data.lastSavedAt = Date.now();  // stamped on every save
+    localStorage.setItem('voidwork_save', JSON.stringify(data));
+  },
 
-  static save(gameState) {
-    gameState.lastSavedAt = Date.now();
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(gameState));
+  reset() {
+    localStorage.removeItem('voidwork_save');
+    // Next SaveSystem.load() call will return a fresh DEFAULTS clone
   }
+};
+```
 
-  static clear() {
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-
-  static getDefaultState() {
-    return {
-      resources: { minerals: 0, alloys: 0 },
-      spaceship: { level: 1, upgrades: { /* ... */ } },
-      stats: { asteroidsDestroyed: 0, resourcesCollected: 0, /* ... */ },
-      achievements: { /* ... */ },
-      skillTree: { nodesUnlocked: [], spentPoints: 0, totalPoints: 0 },
-      settings: { volume: 0.8, musicEnabled: true, /* ... */ },
-      prestige: { level: 0, timesPrestiged: 0, lastPrestigeAt: null },
-      lastSavedAt: Date.now(),
-      gameVersion: '1.0.0'
-    };
-  }
-}
+Default settings shape (see DEFAULTS constant in the file):
+```javascript
+settings: { musicVolume: 0.1, sfxVolume: 0.5, musicEnabled: true, autoSaveDelay: 300000 }
 ```
 
 ---

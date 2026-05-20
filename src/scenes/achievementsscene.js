@@ -1,10 +1,19 @@
 import { GAME_WIDTH, GAME_HEIGHT, GAME_CENTER_X, GAME_CENTER_Y } from '../config/GameConfig.js';
 import { AudioManager } from '../systems/AudioManager.js';
+import { SaveSystem } from '../systems/SaveSystem.js';
+import { ACHIEVEMENTS } from '../config/AchievementConfig.js';
+
+// Grid layout constants
+const COLS        = 4;
+const ICON_SCALE  = 0.18;   // 328px * 0.18 ≈ 59px icons
+const CELL_W      = 168;
+const CELL_H      = 130;
+const GRID_X      = GAME_CENTER_X - (COLS * CELL_W) / 2 + CELL_W / 2;  // centre of first column
+const GRID_Y      = GAME_CENTER_Y - 120;  // first row centre Y
 
 export class AchievementsScene extends Phaser.Scene {
     constructor() {
         super({ key: 'AchievementsScene' });
-        console.log('Achievements Scene loaded');
     }
 
     init(data) {
@@ -12,38 +21,71 @@ export class AchievementsScene extends Phaser.Scene {
     }
 
     create() {
-        // Play click sound on any button click
+        const gameState = SaveSystem.load();
+
         this.input.on('gameobjectdown', () => AudioManager.playSfx(this, 'click'));
+        this.input.keyboard.on('keydown-ESC', () => this.close());
 
-        // Semi-transparent background
-        this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5).setOrigin(0);
+        // ── OVERLAY + PANEL ───────────────────────────────────
+        this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.6).setOrigin(0);
+        this.add.rectangle(GAME_CENTER_X, GAME_CENTER_Y, 720, 480, 0x222222).setOrigin(0.5);
 
-        // Pause menu container
-        const menuContainer = this.add.container(GAME_CENTER_X, GAME_CENTER_Y);
+        // ── HEADER ────────────────────────────────────────────
+        const backBtn = this.add.text(GAME_CENTER_X - 325, GAME_CENTER_Y - 210, '< Back', {
+            fontFamily: 'Upheaval', fontSize: '20px', fill: '#aaaaaa'
+        }).setOrigin(0, 0.5).setInteractive({ useHandCursor: true });
 
-        // Menu background
-        const bg = this.add.rectangle(0, 0, 750, 500, 0x222222).setOrigin(0.5);
-        menuContainer.add(bg);
+        backBtn.on('pointerover', () => backBtn.setStyle({ fill: '#ffffff' }));
+        backBtn.on('pointerout',  () => backBtn.setStyle({ fill: '#aaaaaa' }));
+        backBtn.on('pointerdown', () => this.close());
 
-        // Resume button or press ESC
-        const RESUME_BUTTON = this.add.text(-315, -225, 'Resume', { fontFamily: 'Upheaval', fontSize: '24px', fill: '#fff' }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-        menuContainer.add(RESUME_BUTTON);
-        console.log('Caller scene:', this.callerScene); // Debug log to check caller scene
-        this.input.keyboard.on('keydown-ESC', () => {
-            this.scene.stop(); // Stop the pause scene
-            this.scene.resume(this.callerScene); // Resume the game scene
+        this.add.text(GAME_CENTER_X, GAME_CENTER_Y - 210, 'Achievements', {
+            fontFamily: 'Upheaval', fontSize: '26px', fill: '#ffffff'
+        }).setOrigin(0.5);
+
+        // ── ACHIEVEMENT GRID ──────────────────────────────────
+        const achievementList = Object.values(ACHIEVEMENTS);
+
+        achievementList.forEach((config, index) => {
+            const col = index % COLS;
+            const row = Math.floor(index / COLS);
+
+            const cellX = GRID_X + col * CELL_W;
+            const cellY = GRID_Y + row * CELL_H;
+
+            const isUnlocked = gameState.achievements[config.id]?.unlocked ?? false;
+
+            // Icon — grey and dim if locked, full colour if unlocked
+            const icon = this.add.image(cellX, cellY - 20, 'AchievementIcons', config.iconFrame)
+                .setScale(ICON_SCALE)
+                .setAlpha(isUnlocked ? 1 : 0.25);
+
+            if (!isUnlocked) {
+                // Grey tint for locked achievements
+                icon.setTint(0x888888);
+            }
+
+            // Name label
+            this.add.text(cellX, cellY + 42, isUnlocked ? config.name : '???', {
+                fontFamily: 'Upheaval',
+                fontSize:   '13px',
+                fill:       isUnlocked ? '#ffffff' : '#666666',
+                align:      'center',
+                wordWrap:   { width: CELL_W - 10 }
+            }).setOrigin(0.5, 0);
         });
-        RESUME_BUTTON.on('pointerdown', () => {
-            this.scene.stop(); // Stop the pause scene
-            this.scene.resume(this.callerScene); // Resume the game scene
-        });
 
-        // Achievements list
-        const PLAY_ICON = this.add.sprite(-280, -150, 'AchievementIcons', 0).setOrigin(0.5).setScale(0.4); // 
-        menuContainer.add(PLAY_ICON);
-        const PLAY_TEXT = this.add.text(-280, -100, 'Play the game', { fontFamily: 'Upheaval', fontSize: '20px', fill: '#fff' }).setOrigin(0.5);
-        menuContainer.add(PLAY_TEXT);
+        // ── UNLOCK COUNT ──────────────────────────────────────
+        const unlockedCount = Object.values(gameState.achievements).filter(a => a.unlocked).length;
+        const total = achievementList.length;
 
-        // Need to add more achievements here ...
+        this.add.text(GAME_CENTER_X, GAME_CENTER_Y + 215, `${unlockedCount} / ${total} Unlocked`, {
+            fontFamily: 'Upheaval', fontSize: '18px', fill: '#aaaaaa'
+        }).setOrigin(0.5);
+    }
+
+    close() {
+        this.scene.stop();
+        this.scene.resume(this.callerScene);
     }
 }
