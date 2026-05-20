@@ -74,19 +74,34 @@ export const AudioManager = {
         playTrack(state.playlist[0]);
     },
 
-    stopMusic() {
+    stopMusicFadeOut() {
         if (!state.currentMusic) return;
         const scene = state.scene;
         const music = state.currentMusic;
         state.currentMusic = null;
         if (!scene || !music.isPlaying) { music.destroy(); return; }
+        // Fade out over 1s, then destroy the sound object.
+        // Only use this when the scene will stay alive long enough for the tween to finish.
+        // For instant transitions (e.g. reset), use stopMusicNow() instead.
+        // For graceful scene exits, use stopMusicFadeOut().
         scene.tweens.add({
             targets: music,
             volume: 0,
-            duration: 1000,
+            duration: 10,
             ease: 'Linear',
             onComplete: () => music.destroy()
         });
+    },
+
+    // Stops and destroys the current music track immediately — no fade tween.
+    // Use this before stopping scenes (e.g. Reset Game), because scene.stop()
+    // destroys all tweens and the fade in stopMusicFadeOut() would never complete.
+    stopMusicNow() {
+        if (!state.currentMusic) return;
+        const music = state.currentMusic;
+        state.currentMusic = null; // Clear the reference so nothing else tries to use it
+        music.stop();              // Stop playback immediately
+        music.destroy();           // Free the sound from Phaser's sound manager
     },
 
     playSfx(scene, key) {

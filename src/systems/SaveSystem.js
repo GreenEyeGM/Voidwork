@@ -76,5 +76,13 @@ export const SaveSystem = {
             data.lastSavedAt = Date.now();
             localStorage.setItem(SAVE_KEY, JSON.stringify(data));
         } catch { /* localStorage unavailable (private browsing, etc.) */ }
+    },
+
+    // Wipes all save data — called when the player confirms "Reset Game".
+    // After this, the next SaveSystem.load() will return fresh DEFAULTS.
+    reset() {
+        try {
+            localStorage.removeItem(SAVE_KEY);
+        } catch { /* localStorage unavailable */ }
     }
 };

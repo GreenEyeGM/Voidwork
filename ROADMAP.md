@@ -232,7 +232,7 @@ Skill tree is secondary progression (separate from spaceship upgrades).
 
 Allow the player to wipe all save data and start fresh from the Pause menu.
 
-- [ ] Add "Reset Game" button to PauseScene
+- [x] Add "Reset Game" button to PauseScene
   - File: `src/scenes/PauseMenuScene.js`
   - Position: Below the "Main Menu" button, styled in red to signal danger
   - Behavior: Opens an inline confirmation prompt before doing anything destructive
@@ -244,7 +244,7 @@ Allow the player to wipe all save data and start fresh from the Pause menu.
     - Confirm → call `SaveSystem.reset()`, stop all scenes, start `MainMenuScene`
   > Note: Never reset without a confirmation step — this is permanent and irreversible.
 
-- [ ] Add `reset()` to `SaveSystem.js`
+- [x] Add `reset()` to `SaveSystem.js`
   - File: `src/systems/SaveSystem.js`
   - Behavior: Clears `localStorage['voidwork_save']` and returns a fresh default state
   - Implementation:
@@ -338,6 +338,15 @@ Allow the player to wipe all save data and start fresh from the Pause menu.
 - Code deduplication in MainMenuScene
 - Asteroid health bar
 - Add new SFX files
+
+---
+
+## 🐛 Bug Fixes
+
+- [x] Music doesn't stop on Reset Game confirm
+  - Files: `src/systems/AudioManager.js`, `src/scenes/PauseMenuScene.js`
+  - Cause: `stopMusic()` fades via a tween on GameScene. The scene is stopped immediately after, destroying the tween before it completes — so `music.destroy()` never fires and the sound keeps playing.
+  - Fix: Added `stopMusicNow()` to AudioManager (immediate stop + destroy, no tween). Reset handler now calls `stopMusicNow()` instead of `stopMusic()`.
 
 ---
 
