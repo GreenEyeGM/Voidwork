@@ -22,7 +22,7 @@ Centralise all audio into `src/systems/AudioManager.js`. This fixes both bugs be
 **Why a full AudioManager (not music-only):**
 All audio through one module means volume and mute state live in one place. The music-only approach leaves SFX volume scattered across 5 scenes and will drift. The extra refactor is ~30 min and pays off immediately.
 
-- [ ] Create `src/systems/AudioManager.js`
+- [x] Create `src/systems/AudioManager.js`
   - Singleton module (exported object, not a class)
   - Holds: `musicVolume`, `sfxVolume`, `musicEnabled`, current music object, playlist state
   - Reads initial state from `SaveSystem.load().settings` on first call
@@ -36,16 +36,22 @@ All audio through one module means volume and mute state live in one place. The 
     - `toggleMusic()` — mutes/unmutes, persists to SaveSystem, **and applies to future tracks** (fixes mute bug)
   > Note: Tweens and timers still need a scene reference — pass `scene` into `startGameMusic()` and store it on the manager for use in fade callbacks.
 
-- [ ] Replace all `this.sound.play(sfxKey, ...)` calls in every scene with `AudioManager.playSfx(scene, key)`
+- [x] Replace all `this.sound.play(sfxKey, ...)` calls in every scene with `AudioManager.playSfx(scene, key)`
   - Scenes affected: `GameScene`, `HudScene`, `PauseMenuScene`, `AchievementsScene`, `SettingsScene`, `MainMenuScene`
 
-- [ ] Update `SettingsScene.js` sliders to call `AudioManager` methods instead of `this.sound.volume`
+- [x] Update `SettingsScene.js` sliders to call `AudioManager` methods instead of `this.sound.volume`
   - Music volume slider → `AudioManager.setMusicVolume(t)`
   - SFX volume slider → `AudioManager.setSfxVolume(t)`
   - Music toggle → `AudioManager.toggleMusic()`
 
-- [ ] Add `musicVolume` (default: `0.1`) and `sfxVolume` (default: `0.5`) to `SaveSystem.js` defaults
+- [x] Add `musicVolume` (default: `0.1`) and `sfxVolume` (default: `0.5`) to `SaveSystem.js` defaults
   - Remove old `volume` key from defaults (replaced by the two above)
+
+- [x] Fix music overlap on scene switch (music stacks instead of stopping)
+  - File: `src/systems/AudioManager.js`
+  - Bug: Switching between MainMenuScene and GameScene (in either direction) causes tracks to stack and play simultaneously. Each switch adds another overlapping layer.
+  - Root cause: `stopMusic()` fades out via a scene tween, but `scene.start()` destroys the scene immediately — the tween's `onComplete` never fires, so `music.destroy()` is never called. The old track keeps playing on the global sound manager. `startGameMusic`/`startMenuMusic` then adds a new track on top without clearing the still-playing one.
+  - Fix: At the top of `startMenuMusic()` and `startGameMusic()`, immediately and synchronously destroy `state.currentMusic` if it exists (no fade — the scene transition is the cut). Only use the fade-out tween for the within-game track transitions (the playlist cycling in `playTrack`).
 
 ---
 

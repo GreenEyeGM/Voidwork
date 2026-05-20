@@ -1,4 +1,5 @@
 import { GAME_WIDTH, GAME_HEIGHT, GAME_CENTER_X, GAME_CENTER_Y } from '../config/GameConfig.js';
+import { AudioManager } from '../systems/AudioManager.js';
 
 export class AchievementsScene extends Phaser.Scene {
     constructor() {
@@ -12,9 +13,7 @@ export class AchievementsScene extends Phaser.Scene {
 
     create() {
         // Play click sound on any button click
-        this.input.on('gameobjectdown', (pointer, gameObject) => {
-        this.sound.play('click', { volume: 0.5 });
-        });
+        this.input.on('gameobjectdown', () => AudioManager.playSfx(this, 'click'));
 
         // Semi-transparent background
         this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5).setOrigin(0);

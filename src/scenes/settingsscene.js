@@ -1,7 +1,6 @@
 import { GAME_WIDTH, GAME_HEIGHT, GAME_CENTER_X, GAME_CENTER_Y } from '../config/GameConfig.js';
 import { SaveSystem } from '../systems/SaveSystem.js';
-
-const MUSIC_KEYS = ['mainMenu1', 'mainMenu2', 'gameMusic1', 'gameMusic2', 'gameMusic3', 'gameMusic4', 'gameMusic5'];
+import { AudioManager } from '../systems/AudioManager.js';
 
 const AUTO_SAVE_OPTIONS = [
     { label: '1 min',  value: 60000  },
@@ -22,11 +21,7 @@ export class SettingsScene extends Phaser.Scene {
         const gameState = SaveSystem.load();
         this.settings = gameState.settings;
 
-        // Apply saved volume immediately
-        this.sound.volume = this.settings.volume;
-        this.applyMusicToggle();
-
-        this.input.on('gameobjectdown', () => this.sound.play('click', { volume: 0.5 }));
+        this.input.on('gameobjectdown', () => AudioManager.playSfx(this, 'click'));
         this.input.keyboard.on('keydown-ESC', () => this.close());
 
         // ── OVERLAY + PANEL ───────────────────────────────────
@@ -59,17 +54,19 @@ export class SettingsScene extends Phaser.Scene {
             .setOrigin(0, 0.5)
             .setInteractive({ useHandCursor: true });
 
+        const initVol = AudioManager.musicVolume;
+
         // Filled portion
-        const fill = this.add.rectangle(TRACK_X, TRACK_Y, TRACK_W * this.settings.volume, 8, 0x44ff88)
+        const fill = this.add.rectangle(TRACK_X, TRACK_Y, TRACK_W * initVol, 8, 0x44ff88)
             .setOrigin(0, 0.5);
 
         // Thumb
         const thumb = this.add.rectangle(
-            TRACK_X + TRACK_W * this.settings.volume, TRACK_Y, 14, 26, 0xffffff
+            TRACK_X + TRACK_W * initVol, TRACK_Y, 14, 26, 0xffffff
         ).setOrigin(0.5);
 
         const volLabel = this.add.text(TRACK_X + TRACK_W + 12, TRACK_Y,
-            `${Math.round(this.settings.volume * 100)}%`, {
+            `${Math.round(initVol * 100)}%`, {
                 fontFamily: 'Upheaval', fontSize: '18px', fill: '#aaaaaa'
             }).setOrigin(0, 0.5);
 
@@ -79,14 +76,13 @@ export class SettingsScene extends Phaser.Scene {
             const t = Phaser.Math.Clamp((worldX - TRACK_X) / TRACK_W, 0, 1);
             thumb.x = TRACK_X + t * TRACK_W;
             fill.setSize(TRACK_W * t, 8);
-            this.settings.volume = parseFloat(t.toFixed(2));
-            this.sound.volume = this.settings.volume;
             volLabel.setText(`${Math.round(t * 100)}%`);
+            AudioManager.setMusicVolume(parseFloat(t.toFixed(2)));
         };
 
         track.on('pointerdown', (ptr) => { dragging = true; updateVolume(ptr.x); });
         this.input.on('pointermove', (ptr) => { if (dragging) updateVolume(ptr.x); });
-        this.input.on('pointerup',   () => { if (dragging) { dragging = false; this.saveSettings(); } });
+        this.input.on('pointerup',   () => { dragging = false; });
 
         // ── MUSIC TOGGLE ──────────────────────────────────────
         this.add.text(GAME_CENTER_X - 245, GAME_CENTER_Y + 20, 'Music', {
@@ -94,17 +90,15 @@ export class SettingsScene extends Phaser.Scene {
         }).setOrigin(0, 0.5);
 
         const musicBtn = this.add.text(GAME_CENTER_X + 100, GAME_CENTER_Y + 20,
-            this.settings.musicEnabled ? 'ON' : 'OFF', {
+            AudioManager.musicEnabled ? 'ON' : 'OFF', {
                 fontFamily: 'Upheaval', fontSize: '22px',
-                fill: this.settings.musicEnabled ? '#44ff88' : '#ff4444'
+                fill: AudioManager.musicEnabled ? '#44ff88' : '#ff4444'
             }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
         musicBtn.on('pointerdown', () => {
-            this.settings.musicEnabled = !this.settings.musicEnabled;
-            musicBtn.setText(this.settings.musicEnabled ? 'ON' : 'OFF');
-            musicBtn.setStyle({ fill: this.settings.musicEnabled ? '#44ff88' : '#ff4444' });
-            this.applyMusicToggle();
-            this.saveSettings();
+            const enabled = AudioManager.toggleMusic();
+            musicBtn.setText(enabled ? 'ON' : 'OFF');
+            musicBtn.setStyle({ fill: enabled ? '#44ff88' : '#ff4444' });
         });
 
         // ── AUTO-SAVE DELAY ───────────────────────────────────
@@ -131,17 +125,9 @@ export class SettingsScene extends Phaser.Scene {
         });
     }
 
-    applyMusicToggle() {
-        MUSIC_KEYS.forEach(key => {
-            const sound = this.sound.get(key);
-            // @ts-ignore — Phaser 4 types omit BaseSound.mute but it exists at runtime
-            if (sound) sound.mute = !this.settings.musicEnabled;
-        });
-    }
-
     saveSettings() {
         const gameState = SaveSystem.load();
-        gameState.settings = this.settings;
+        gameState.settings.autoSaveDelay = this.settings.autoSaveDelay;
         SaveSystem.save(gameState);
     }
 

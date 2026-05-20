@@ -2,7 +2,8 @@ const SAVE_KEY = 'voidwork_save';
 
 const DEFAULTS = {
     settings: {
-        volume: 1.0,
+        musicVolume: 0.1,
+        sfxVolume: 0.5,
         musicEnabled: true,
         autoSaveDelay: 300000   // 5 minutes in ms
     }

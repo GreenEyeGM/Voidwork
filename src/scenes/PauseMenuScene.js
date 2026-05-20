@@ -1,4 +1,5 @@
 import { GAME_WIDTH, GAME_HEIGHT, GAME_CENTER_X, GAME_CENTER_Y } from "../config/GameConfig.js";
+import { AudioManager } from "../systems/AudioManager.js";
 
 export class PauseScene extends Phaser.Scene {
     constructor() {
@@ -8,9 +9,7 @@ export class PauseScene extends Phaser.Scene {
 
     create() {
         // Play click sound on any button click
-        this.input.on('gameobjectdown', (pointer, gameObject) => {
-        this.sound.play('click', { volume: 0.5 });
-        });
+        this.input.on('gameobjectdown', () => AudioManager.playSfx(this, 'click'));
 
         // Semi-transparent background
         this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5).setOrigin(0);
@@ -59,7 +58,6 @@ export class PauseScene extends Phaser.Scene {
         menuContainer.add(mainMenuButton);
 
         mainMenuButton.on('pointerdown', () => {
-            this.sound.stopAll();
             this.scene.stop('GameScene'); // Stop the game scene
             this.scene.stop('HudScene'); // Stop the HUD scene
             this.scene.stop(); // Stop the pause scene

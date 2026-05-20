@@ -1,5 +1,6 @@
 import { createBackground } from "../utils/Background.js";
 import { Asteroid, getRandomAsteroidType } from '../objects/Asteroid.js';
+import { AudioManager } from '../systems/AudioManager.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -9,15 +10,9 @@ export class GameScene extends Phaser.Scene {
     
     create() {
         // Play click sound on any button click
-        this.input.on('gameobjectdown', (pointer, gameObject) => {
-        this.sound.play('click', { volume: 0.5 });
-        });
+        this.input.on('gameobjectdown', () => AudioManager.playSfx(this, 'click'));
 
-        // Music playlist — shuffled, fade in/out between tracks
-        this.musicPlaylist = Phaser.Utils.Array.Shuffle(['gameMusic1', 'gameMusic2', 'gameMusic3', 'gameMusic4', 'gameMusic5']);
-        this.musicIndex = 0;
-        this.currentMusic = null;
-        this.playNextTrack();
+        AudioManager.startGameMusic(this);
 
         createBackground(this, 200, 100, 50);
         this.scene.launch('HudScene').bringToTop('HudScene'); // Launch the HUD scene on top of the game scene
@@ -53,7 +48,7 @@ export class GameScene extends Phaser.Scene {
         // ── EVENTS ───────────────────────────────────────────
         // Asteroid.js emits 'asteroidDestroyed' when it dies
         this.events.on('asteroidDestroyed', () => {
-            this.sound.play('asteroidDestroyed', { volume: 0.5 });
+            AudioManager.playSfx(this, 'asteroidDestroyed');
             this.destroyedCount++;
             this.txtDestroyed.setText(`Asteroids Destroyed: ${this.destroyedCount}`);
         });
@@ -96,41 +91,11 @@ export class GameScene extends Phaser.Scene {
 
         // Debug log to check resource counts when collected
         this.events.on('collectResources', (data) => {
-            this.sound.play('collectResources', { volume: 0.5 });
+            AudioManager.playSfx(this, 'collectResources');
             console.log(`Total Minerals: ${this.mineralCount} | Total Alloys: ${this.alloyCount}`);
         });
     }
  
-    playNextTrack() {
-        const key = this.musicPlaylist[this.musicIndex];
-        const music = this.sound.add(key, { volume: 0 });
-        this.currentMusic = music;
-        music.play();
-
-        // Fade in
-        this.tweens.add({ targets: music, volume: 0.1, duration: 2000, ease: 'Linear' });
-
-        // Schedule fade-out 3s before the track ends, then chain to next track
-        const fadeDelay = Math.max(0, (music.duration - 3) * 1000);
-        this.musicFadeTimer = this.time.delayedCall(fadeDelay, () => {
-            this.tweens.add({
-                targets: music,
-                volume: 0,
-                duration: 3000,
-                ease: 'Linear',
-                onComplete: () => {
-                    music.destroy();
-                    this.musicIndex++;
-                    if (this.musicIndex >= this.musicPlaylist.length) {
-                        this.musicPlaylist = Phaser.Utils.Array.Shuffle(this.musicPlaylist);
-                        this.musicIndex = 0;
-                    }
-                    this.playNextTrack();
-                }
-            });
-        });
-    }
-
     spawnAsteroid() {
     if (this.asteroidCount >= this.maxAsteroids) return;
     // Spawn from a random edge of the screen

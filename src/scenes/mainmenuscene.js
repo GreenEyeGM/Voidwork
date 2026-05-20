@@ -1,5 +1,6 @@
 import { createBackground } from "../utils/Background.js";
 import { GAME_WIDTH, GAME_CENTER_X, GAME_CENTER_Y } from "../config/GameConfig.js";
+import { AudioManager } from "../systems/AudioManager.js";
 
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
@@ -12,12 +13,9 @@ export class MainMenuScene extends Phaser.Scene {
         createBackground(this, 100, 75, 50);
 
         // Play click sound on any button click
-        this.input.on('gameobjectdown', (pointer, gameObject) => {
-        this.sound.play('click', { volume: 0.5 });
-        });
+        this.input.on('gameobjectdown', () => AudioManager.playSfx(this, 'click'));
 
-        //Main Menu music
-        this.sound.play('mainMenu1', {volume: 0.1, loop: true});
+        AudioManager.startMenuMusic(this);
 
         // Add title text
         let titleText = this.add.text(GAME_CENTER_X, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
@@ -41,7 +39,6 @@ export class MainMenuScene extends Phaser.Scene {
         playButton.on('pointerdown', () => {
             playButton.setFrame(2); // Pressed state
             this.scene.start('GameScene');
-            this.sound.stopAll(); // Stop the main menu music when starting the game
         });
         //#endregion
         
