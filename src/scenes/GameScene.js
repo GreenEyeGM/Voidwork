@@ -43,6 +43,12 @@ export class GameScene extends Phaser.Scene {
         });
 
         // ── EVENTS ───────────────────────────────────────────
+        // Remove any leftover listeners from a previous session before adding new ones.
+        // Phaser does NOT automatically clear these when a scene is stopped and relaunched,
+        // so without this, each reset would stack another listener and double-count events.
+        this.events.off('asteroidDestroyed');
+        this.events.off('collectResources');
+
         this.events.on('asteroidDestroyed', () => {
             AudioManager.playSfx(this, 'asteroidDestroyed');
 

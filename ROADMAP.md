@@ -343,6 +343,11 @@ Allow the player to wipe all save data and start fresh from the Pause menu.
 
 ## 🐛 Bug Fixes
 
+- [x] Asteroid counter increments by more than 1 after reset
+  - File: `src/scenes/GameScene.js`
+  - Cause: `this.events.on('asteroidDestroyed', ...)` and `this.events.on('collectResources', ...)` are added in `create()`. Phaser does not automatically clear these when a scene is stopped and relaunched — so each reset stacks another listener, causing the counter to fire once per accumulated session.
+  - Fix: Call `this.events.off()` for each event before re-adding the listener in `create()`, ensuring exactly one listener exists per session.
+
 - [x] Music doesn't stop on Reset Game confirm
   - Files: `src/systems/AudioManager.js`, `src/scenes/PauseMenuScene.js`
   - Cause: `stopMusic()` fades via a tween on GameScene. The scene is stopped immediately after, destroying the tween before it completes — so `music.destroy()` never fires and the sound keeps playing.

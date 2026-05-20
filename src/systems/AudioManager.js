@@ -87,7 +87,7 @@ export const AudioManager = {
         scene.tweens.add({
             targets: music,
             volume: 0,
-            duration: 10,
+            duration: 1000,
             ease: 'Linear',
             onComplete: () => music.destroy()
         });
