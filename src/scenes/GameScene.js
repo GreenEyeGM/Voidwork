@@ -3,6 +3,7 @@ import { Asteroid, getRandomAsteroidType } from '../objects/Asteroid.js';
 import { AudioManager } from '../systems/AudioManager.js';
 import { SaveSystem } from '../systems/SaveSystem.js';
 import { AchievementSystem } from '../systems/AchievementSystem.js';
+import { GAME_HEIGHT, GAME_CENTER_X } from '../config/GameConfig.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -21,6 +22,14 @@ export class GameScene extends Phaser.Scene {
 
         createBackground(this, 200, 100, 50);
         this.scene.launch('HudScene').bringToTop('HudScene');
+
+        // ── SPACESHIP SPRITE ──────────────────────────────────
+        // Show the player's spaceship in the top-right corner.
+        // Purely cosmetic — the real spaceship data (level, upgrades) lives in gameState.spaceship.
+        // setDepth(1) keeps it drawn on top of drifting asteroids.
+        this.spaceshipSprite = this.add.image(GAME_CENTER_X, GAME_HEIGHT - 60, 'spaceship')
+            .setDisplaySize(80, 80)  // scale the 296×296 source image down to 80×80
+            .setDepth(1);
 
         // ── RESOURCE COUNTERS ─────────────────────────────────
         const textStyle = {

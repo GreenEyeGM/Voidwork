@@ -21,48 +21,7 @@ These prevent other work from proceeding cleanly.
 
 ## 🟡 High Priority (Unblock Other Work)
 
-### Achievements Scene — Display & Functionality
-
-UI scaffolding exists. Need to wire up achievement tracking and unlock notifications.
-
-- [x] Display full achievements list with icons and descriptions
-  - File: `src/scenes/AchievementsScene.js`
-  - Source: `AchievementIcons` spritesheet (from Preloader)
-  - Data: Define achievement config with descriptions (name, description, icon frame, milestone target)
-  - Example config:
-    ```javascript
-    const ACHIEVEMENTS = {
-      firstStrike: {
-        id: 'firstStrike',
-        name: 'First Strike',
-        description: 'Destroy 1 asteroid',
-        iconFrame: 0,
-        milestone: 'asteroidsDestroyed',
-        target: 1
-      },
-      // ... more achievements
-    };
-    ```
-  - Layout: Grid or list of achievement icons, show unlock status (locked/unlocked), description on hover/click
-  > Note: See DESIGN.md (Achievements section) for full milestone list.
-
-- [x] Wire achievements to game state — unlock when milestone hit
-  - File: `src/systems/AchievementSystem.js` (create if not exists)
-  - Trigger points: GameScene events (`asteroidDestroyed`, `collectResources`, `upgradeApplied`, etc.)
-  - Logic: After every stat update, call `AchievementSystem.checkMilestones(gameState)` to see if new achievements unlocked
-  - Unlock behavior:
-    1. Mark achievement `unlocked = true` in gameState
-    2. Play `achievementUnlocked` SFX
-    3. Show brief on-screen notification (text pop-up, 2–3 seconds)
-    4. Call `SaveSystem.save(gameState)`
-  - File: `src/systems/AchievementSystem.js`
-
-- [x] Implement achievement milestones (from DESIGN.md)
-  - Asteroid milestones: 1, 10, 50, 200, 500, 1000
-  - Resource milestones: 10, 100, 500, 1000
-  - Spaceship level milestones: 5, 10
-  - Special milestones: Prestige once, max Tier 1 upgrades, unlock all skill nodes
-  - File: `src/systems/AchievementSystem.js` (or `src/config/AchievementConfig.js`)
+*(All resolved — see Completed section.)*
 
 ---
 
@@ -72,11 +31,10 @@ UI scaffolding exists. Need to wire up achievement tracking and unlock notificat
 
 Spaceship is the core progression mechanic.
 
-- [ ] Add spaceship sprite to GameScene
+- [x] Add spaceship sprite to GameScene
   - File: `src/scenes/GameScene.js` (create() method)
-  - Sprite: Use `HUDIcons` spritesheet, frame 3 (spaceship icon)
-  - Position: Fixed on screen (top right, below the ship info UI)
-  - Size: Medium (maybe 80×80 px)
+  - Sprite: `'spaceship'` image (296×296 source, displayed at 80×80)
+  - Position: Bottom centre (`GAME_CENTER_X`, `GAME_HEIGHT - 60`)
   - Note: This is cosmetic; the real spaceship state is in `gameState.spaceship`
 
 - [ ] Implement spaceship upgrade system
@@ -211,6 +169,26 @@ Skill tree is secondary progression (separate from spaceship upgrades).
 
 ## 🟢 Lower Priority (Polish & Future)
 
+### Achievement Scene — Hover Preview
+
+- [ ] Show achievement description on hover; locked = grayed out, unlocked = neon glow border
+  - File: `src/scenes/AchievementsScene.js`
+  - Each achievement cell already renders an icon + name. Add `setInteractive()` to the icon and wire `pointerover` / `pointerout` events.
+  - On `pointerover`: show a shared preview panel (one panel reused for all cells, repositioned on each hover)
+    - Panel contents: achievement name (top) + description text (below) from `config.description` in `ACHIEVEMENTS`
+    - Panel position: centred at the bottom of the grid panel, or floating near the hovered cell — whichever avoids clipping the grid
+  - **Locked state** (panel appearance):
+    - Background: dark rectangle (`0x1a1a1a`)
+    - Border: single stroke, muted grey (`0x444444`)
+    - Text: grey (`#666666`)
+    - Name: still shows `'???'` (consistent with the grid label)
+  - **Unlocked state** (panel appearance):
+    - Background: dark rectangle (`0x1a1a1a`)
+    - Neon glow border: draw 3–4 concentric `Graphics` strokes around the panel, each one slightly larger and more transparent than the last, using a neon cyan or purple colour (e.g. `0x00ffff` or `0xcc44ff`) — this simulates a CSS-style glow without shaders
+    - Text: white (`#ffffff`), name in full
+  - On `pointerout`: hide the preview panel (`setVisible(false)`)
+  - > Note: `config.description` is already defined in `AchievementConfig.js` — no new data needed. The neon glow is purely a `Graphics` layering trick; do not use postFX pipelines as Phaser 4 UMD support for those is inconsistent.
+
 ### Spaceship Display & UI
 
 - [ ] Settings button in HUD (Bottom Right, also visible in PauseScene)
@@ -221,42 +199,12 @@ Skill tree is secondary progression (separate from spaceship upgrades).
   - Same icon should appear in PauseScene too
   - File: `src/scenes/PauseScene.js`
 
-- [ ] Asteroid health bar (show current asteroid's HP above or below it)
+- [x] Asteroid health bar (show current asteroid's HP above or below it)
   - File: `src/objects/Asteroid.js`
   - UI: Simple bar (Graphics object or image) floating above asteroid
   - Update: Every hit, reduce bar width proportionally
   - Display: Only show if asteroid health < max (or always visible)
   - Cosmetic: Hide when asteroid destroyed
-
-### Reset Game
-
-Allow the player to wipe all save data and start fresh from the Pause menu.
-
-- [x] Add "Reset Game" button to PauseScene
-  - File: `src/scenes/PauseMenuScene.js`
-  - Position: Below the "Main Menu" button, styled in red to signal danger
-  - Behavior: Opens an inline confirmation prompt before doing anything destructive
-  - Confirmation UI:
-    - Hide the normal menu buttons
-    - Show text: `"Reset all progress? This cannot be undone."`
-    - Show two buttons: `"Yes, Reset"` (red) and `"Cancel"` (grey)
-    - Cancel → restore normal pause menu buttons, no data touched
-    - Confirm → call `SaveSystem.reset()`, stop all scenes, start `MainMenuScene`
-  > Note: Never reset without a confirmation step — this is permanent and irreversible.
-
-- [x] Add `reset()` to `SaveSystem.js`
-  - File: `src/systems/SaveSystem.js`
-  - Behavior: Clears `localStorage['voidwork_save']` and returns a fresh default state
-  - Implementation:
-    ```javascript
-    reset() {
-        localStorage.removeItem('voidwork_save');
-        return structuredClone(DEFAULTS);
-    }
-    ```
-  - Call site: PauseScene confirm button → `SaveSystem.reset()` → stop music → restart scenes
-
----
 
 ### Game Scene Level 1
 
@@ -327,7 +275,6 @@ Allow the player to wipe all save data and start fresh from the Pause menu.
 
 ### For Feature Completeness (1–3 hours)
 - Spaceship upgrades (core logic)
-- Reset Game button in PauseScene
 
 ### For Big Features (3–8 hours)
 - UpgradeScene modal (display + purchase)
@@ -338,20 +285,6 @@ Allow the player to wipe all save data and start fresh from the Pause menu.
 - Code deduplication in MainMenuScene
 - Asteroid health bar
 - Add new SFX files
-
----
-
-## 🐛 Bug Fixes
-
-- [x] Asteroid counter increments by more than 1 after reset
-  - File: `src/scenes/GameScene.js`
-  - Cause: `this.events.on('asteroidDestroyed', ...)` and `this.events.on('collectResources', ...)` are added in `create()`. Phaser does not automatically clear these when a scene is stopped and relaunched — so each reset stacks another listener, causing the counter to fire once per accumulated session.
-  - Fix: Call `this.events.off()` for each event before re-adding the listener in `create()`, ensuring exactly one listener exists per session.
-
-- [x] Music doesn't stop on Reset Game confirm
-  - Files: `src/systems/AudioManager.js`, `src/scenes/PauseMenuScene.js`
-  - Cause: `stopMusic()` fades via a tween on GameScene. The scene is stopped immediately after, destroying the tween before it completes — so `music.destroy()` never fires and the sound keeps playing.
-  - Fix: Added `stopMusicNow()` to AudioManager (immediate stop + destroy, no tween). Reset handler now calls `stopMusicNow()` instead of `stopMusic()`.
 
 ---
 
@@ -375,6 +308,13 @@ Allow the player to wipe all save data and start fresh from the Pause menu.
 - [x] Game music shuffled playlist — all 5 tracks with 2s fade in / 3s fade out between tracks
 - [x] AudioManager refactor (`src/systems/AudioManager.js`) — centralised music + SFX, volume/mute state, SaveSystem integration
 - [x] Fix music overlap on scene switch — scene transitions no longer stack tracks
+- [x] Achievements Scene — display full list with icons, descriptions, and unlock status
+- [x] Achievement system — wire milestones to game state, unlock on hit, toast notification + SFX
+- [x] Achievement milestones — asteroid (1/10/50/200/500/1000), resource (10/100/500/1000), spaceship level, prestige, skill nodes
+- [x] Reset Game button in PauseScene — confirmation prompt, red styling, irreversible warning
+- [x] SaveSystem.reset() — clears localStorage and returns fresh default state
+- [x] Fix: Asteroid counter increments by more than 1 after reset — stacked event listeners, fixed with events.off() before re-adding
+- [x] Fix: Music doesn't stop on Reset Game confirm — added stopMusicNow() for instant stop before scene teardown
 
 ---
 

@@ -48,6 +48,9 @@ export class Preloader extends Phaser.Scene {
 
         // Load cursor
         this.load.image('cursor', '../assets/images/voidwork_cursor.png');
+
+        // Load the spaceship sprite for GameScene
+        this.load.image('spaceship', '../assets/images/voidwork_spaceship.png');
         
         //#endregion
         // Name of the game, displayed on the loading screen

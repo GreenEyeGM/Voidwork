@@ -1,5 +1,10 @@
 import { GAME_WIDTH, GAME_HEIGHT } from "../config/GameConfig.js";
 
+// Health bar dimensions and position relative to asteroid centre
+const BAR_WIDTH    = 60;   // total width of the health bar in pixels
+const BAR_HEIGHT   = 6;    // height of the bar
+const BAR_OFFSET_Y = -56;  // how far above the asteroid centre the bar sits
+
 /* ASTEROID TYPE CONFIGS
 // Each type has 3 variants (rows in the spritesheet)
 // Each variant has 3 frames: [healthy, cracked, broken]
@@ -108,6 +113,27 @@ export class Asteroid extends Phaser.GameObjects.Sprite {
         this.on('pointerdown', () => {
             this.takeDamage();
         });
+
+        // ── HEALTH BAR ────────────────────────────────────────
+        // Two rectangles stacked on top of each other.
+        // The background is always full-width and dark.
+        // The foreground shrinks left-to-right as health drops.
+        // setOrigin(0, 0.5) anchors them from the left edge so shrinking is natural.
+        // setDepth(2) keeps them drawn above asteroids (depth 0) and the spaceship (depth 1).
+
+        this.healthBarBg = this.scene.add.rectangle(
+            this.x - BAR_WIDTH / 2,   // left edge of bar
+            this.y + BAR_OFFSET_Y,
+            BAR_WIDTH, BAR_HEIGHT,
+            0x333333, 0.8             // dark grey background
+        ).setOrigin(0, 0.5).setDepth(2);
+
+        this.healthBarFg = this.scene.add.rectangle(
+            this.x - BAR_WIDTH / 2,
+            this.y + BAR_OFFSET_Y,
+            BAR_WIDTH, BAR_HEIGHT,
+            0x44ff44                  // green at full health
+        ).setOrigin(0, 0.5).setDepth(2);
     }
  
     // --------------------------------------------------------
@@ -122,13 +148,19 @@ export class Asteroid extends Phaser.GameObjects.Sprite {
         if (this.health === 2) {
             // Switch to cracked frame
             this.setFrame(this.variant[1]);
- 
+            // Bar turns orange and shrinks to 2/3 width
+            this.healthBarFg.setFillStyle(0xffaa00);
+            this.healthBarFg.width = BAR_WIDTH * (this.health / this.config.health);
+
         } else if (this.health === 1) {
             // Switch to broken frame
             this.setFrame(this.variant[2]);
- 
+            // Bar turns red and shrinks to 1/3 width
+            this.healthBarFg.setFillStyle(0xff4444);
+            this.healthBarFg.width = BAR_WIDTH * (this.health / this.config.health);
+
         } else if (this.health <= 0) {
-            // Time to break apart
+            // Time to break apart — bars are destroyed inside breakApart()
             this.breakApart();
         }
     }
@@ -194,6 +226,11 @@ export class Asteroid extends Phaser.GameObjects.Sprite {
     }
  
     scene.events.emit('asteroidDestroyed');  // ← scene
+
+    // Destroy health bar graphics before destroying the asteroid sprite
+    this.healthBarBg.destroy();
+    this.healthBarFg.destroy();
+
     this.destroy();  // now safe — we're done using this.scene
     }
  
@@ -217,5 +254,11 @@ export class Asteroid extends Phaser.GameObjects.Sprite {
     preUpdate(time, delta) {
         super.preUpdate(time, delta); // always call super first
         this.wrapAround();
+
+        // Keep health bar positioned above the asteroid as it drifts and wraps
+        const barX = this.x - BAR_WIDTH / 2;
+        const barY = this.y + BAR_OFFSET_Y;
+        this.healthBarBg.setPosition(barX, barY);
+        this.healthBarFg.setPosition(barX, barY);
     }
 }

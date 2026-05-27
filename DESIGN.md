@@ -411,7 +411,7 @@ All state persists in a single JSON object under `localStorage['voidwork_save']`
 
 - Asteroid cracking visual as health decreases (frame animation)
 - Resource counter text pulses when resources collected
-- Spaceship UI shows a little ship sprite (not just numbers)
+- Spaceship UI shows a little ship sprite (not just numbers) — positioned bottom centre of the GameScene canvas (`GAME_CENTER_X`, `GAME_HEIGHT - 60`), displayed at 80×80 px
 - Skill tree nodes glow when unlockable
 
 ---
