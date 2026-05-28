@@ -215,7 +215,6 @@ export class Asteroid extends Phaser.GameObjects.Sprite {
                 alloys: chunk.alloys
             });
             chunk.destroy();
-            console.log(`Collected chunk with ${chunk.minerals} minerals and ${chunk.alloys} alloys`);
         });
  
         scene.time.delayedCall(8000, () => {  // ← scene

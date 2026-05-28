@@ -8,7 +8,6 @@ import { GAME_HEIGHT, GAME_CENTER_X } from '../config/GameConfig.js';
 export class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
-        console.log('GameScene loaded');
     }
 
     create() {
@@ -24,7 +23,7 @@ export class GameScene extends Phaser.Scene {
         this.scene.launch('HudScene').bringToTop('HudScene');
 
         // ── SPACESHIP SPRITE ──────────────────────────────────
-        // Show the player's spaceship in the top-right corner.
+        // Show the player's spaceship at the bottom centre of the screen.
         // Purely cosmetic — the real spaceship data (level, upgrades) lives in gameState.spaceship.
         // setDepth(1) keeps it drawn on top of drifting asteroids.
         this.spaceshipSprite = this.add.image(GAME_CENTER_X, GAME_HEIGHT - 60, 'spaceship')

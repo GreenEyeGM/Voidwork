@@ -81,9 +81,7 @@ export const AudioManager = {
         state.currentMusic = null;
         if (!scene || !music.isPlaying) { music.destroy(); return; }
         // Fade out over 1s, then destroy the sound object.
-        // Only use this when the scene will stay alive long enough for the tween to finish.
-        // For instant transitions (e.g. reset), use stopMusicNow() instead.
-        // For graceful scene exits, use stopMusicFadeOut().
+        // Only use when the scene stays alive long enough for the tween to complete.
         scene.tweens.add({
             targets: music,
             volume: 0,

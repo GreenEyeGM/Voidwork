@@ -144,7 +144,7 @@ const DEFAULT_STATE = {
     // Initialize all achievements as locked
     firstStrike: { unlocked: false, unlockedAt: null },
     asteroidHunter: { unlocked: false, unlockedAt: null },
-    spaceCleanor: { unlocked: false, unlockedAt: null },
+    spaceCleaner: { unlocked: false, unlockedAt: null },
     // ... (see DESIGN.md for full list)
   },
 
@@ -562,27 +562,27 @@ How asteroid types define their properties. Reference in `Asteroid.js`:
 const ASTEROID_TYPES = {
   impure: {
     name: 'Impure',
-    health: { min: 10, max: 20 },
-    drop: { minerals: { min: 10, max: 20 }, alloys: { min: 0, max: 0 } },
-    speed: { min: 80, max: 120 },
-    spawnWeight: 60,  // 60% of all spawns
+    health: 3,  // clicks to destroy (fixed for all variants)
+    drop: { minerals: { min: 5, max: 10 }, alloys: { min: 0, max: 0 } },
+    speed: { min: 20, max: 50 },
+    spawnWeight: 60,  // 60% of all spawns (roll 1–60)
     frames: [
-      [0, 7, 14],   // Variant 0: [healthy, cracked, broken]
-      [1, 8, 15],   // Variant 1
-      [2, 9, 16]    // Variant 2
+      [0,  1,  2],  // Variant 0: [healthy, cracked, broken]
+      [3,  4,  5],  // Variant 1
+      [6,  7,  8]   // Variant 2
     ]
   },
 
   normal: {
     name: 'Normal',
-    health: { min: 15, max: 30 },
-    drop: { minerals: { min: 15, max: 30 }, alloys: { min: 5, max: 15 } },
-    speed: { min: 100, max: 150 },
-    spawnWeight: 40,  // 40% of all spawns
+    health: 3,  // clicks to destroy (fixed for all variants)
+    drop: { minerals: { min: 10, max: 20 }, alloys: { min: 5, max: 10 } },
+    speed: { min: 20, max: 50 },
+    spawnWeight: 40,  // 40% of all spawns (roll 61–100)
     frames: [
-      [3, 10, 17],  // Variant 0: [healthy, cracked, broken]
-      [4, 11, 18],  // Variant 1
-      [5, 12, 19]   // Variant 2
+      [9,  10, 11],  // Variant 0: [healthy, cracked, broken]
+      [12, 13, 14],  // Variant 1
+      [15, 16, 17]   // Variant 2
     ]
   }
 };
@@ -653,7 +653,7 @@ reset() {
 
 // Call site — PauseScene confirm button:
 SaveSystem.reset();
-AudioManager.stopMusic();
+AudioManager.stopMusicNow();
 this.scene.stop('GameScene');
 this.scene.stop('HudScene');
 this.scene.stop('PauseScene');

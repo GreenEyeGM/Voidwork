@@ -4,14 +4,13 @@ import { AudioManager } from "../systems/AudioManager.js";
 export class HudScene extends Phaser.Scene {
     constructor() {
         super({ key: 'HudScene' });
-        console.log('Hud Scene loaded');
     }
     
     create() {
         // Play click sound on any button click
         this.input.on('gameobjectdown', () => AudioManager.playSfx(this, 'click'));
 
-        // // Add HUD icons
+        // Add HUD icons
         const HUD_ICONS = [];
         // Formula : X = gameWidth - index * (iconWidth + padding) Y = 10 (fixed Y position)
         const START_X = GAME_WIDTH - (90 + 10)*4; // Start from the right edge with padding
@@ -25,7 +24,6 @@ export class HudScene extends Phaser.Scene {
         const ICON_ACTIONS = ["back", "settings", "achievements", "spaceship"];
         HUD_ICONS.forEach((icon, index) => {
             icon.name = ICON_ACTIONS[index]; // Assign a name to each icon for easier identification
-            index++;
         });
         HUD_ICONS[0].on('pointerdown', () => {
             this.scene.stop('GameScene');

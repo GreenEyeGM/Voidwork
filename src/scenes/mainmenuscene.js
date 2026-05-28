@@ -1,11 +1,10 @@
 import { createBackground } from "../utils/Background.js";
-import { GAME_WIDTH, GAME_CENTER_X, GAME_CENTER_Y } from "../config/GameConfig.js";
+import { GAME_CENTER_X, GAME_CENTER_Y } from "../config/GameConfig.js";
 import { AudioManager } from "../systems/AudioManager.js";
 
 export class MainMenuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainMenuScene' });
-        console.log('MainMenu loaded');
     }
     
     
@@ -18,14 +17,14 @@ export class MainMenuScene extends Phaser.Scene {
         AudioManager.startMenuMusic(this);
 
         // Add title text
-        let titleText = this.add.text(GAME_CENTER_X, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
-        
+        const titleText = this.add.text(GAME_CENTER_X, 200, 'Voidwork', { fontFamily: 'Upheaval', fontSize: '64px'}).setOrigin(0.5, 0.5);
+
         //#region Add play button and text
-        let playButton = this.add.sprite(GAME_CENTER_X + 32, 400, 'mainMenuButtons', 0).setOrigin(0.5)
+        const playButton = this.add.sprite(GAME_CENTER_X + 32, 400, 'mainMenuButtons', 0).setOrigin(0.5)
             .setInteractive({ hitArea: new Phaser.Geom.Circle(64, 64, 30), hitAreaCallback: Phaser.Geom.Circle.Contains, useHandCursor: true });
-        
+
         // Add Text next to play button
-        let playText = this.add.text(GAME_CENTER_X - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        const playText = this.add.text(GAME_CENTER_X - 79, 400, 'Play', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Play button interactivity
         playButton.on('pointerover', () => {
@@ -43,11 +42,11 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
         
         //#region Add achievements button and text
-        let achievementsButton = this.add.sprite(GAME_CENTER_X + 32, 480, 'mainMenuButtons', 6).setOrigin(0.5)
+        const achievementsButton = this.add.sprite(GAME_CENTER_X + 32, 480, 'mainMenuButtons', 6).setOrigin(0.5)
             .setInteractive({ hitArea: new Phaser.Geom.Circle(64, 64, 30), hitAreaCallback: Phaser.Geom.Circle.Contains, useHandCursor: true });
-        
+
         // Add Text next to achievements button
-        let achievementsText = this.add.text(GAME_CENTER_X - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        const achievementsText = this.add.text(GAME_CENTER_X - 231, 480, 'Achievements', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Achievements button interactivity
         achievementsButton.on('pointerover', () => {
@@ -66,11 +65,11 @@ export class MainMenuScene extends Phaser.Scene {
         //#endregion
 
         //#region Add settings button and text
-        let settingsButton = this.add.sprite(GAME_CENTER_X + 32, 560, 'mainMenuButtons', 5).setOrigin(0.5)
+        const settingsButton = this.add.sprite(GAME_CENTER_X + 32, 560, 'mainMenuButtons', 5).setOrigin(0.5)
             .setInteractive({ hitArea: new Phaser.Geom.Circle(64, 64, 30), hitAreaCallback: Phaser.Geom.Circle.Contains, useHandCursor: true });
-        
+
         // Add Text next to settings button
-        let settingsText = this.add.text(GAME_CENTER_X - 149, 560, 'Settings', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
+        const settingsText = this.add.text(GAME_CENTER_X - 149, 560, 'Settings', { fontFamily: 'Upheaval', fontSize: '32px' }).setOrigin(0, 0.5);
 
         // Settings button interactivity
         settingsButton.on('pointerover', () => {

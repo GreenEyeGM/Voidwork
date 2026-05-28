@@ -355,13 +355,14 @@ Exported as an **object singleton** with private internal state. Reads initial s
 
 ```javascript
 export const AudioManager = {
-  startMenuMusic(scene),  // destroys current track, starts mainMenu1/2 cycle
-  startGameMusic(scene),  // destroys current track, starts shuffled game playlist
-  stopMusic(),            // fades out and destroys current track
-  playSfx(scene, key),    // plays a SFX key at sfxVolume
-  setMusicVolume(v),      // live-updates current track + persists to SaveSystem
-  setSfxVolume(v),        // persists to SaveSystem (applies to next playSfx call)
-  toggleMusic(),          // mutes/unmutes current track + persists, returns new boolean state
+  startMenuMusic(scene),     // destroys current track, starts mainMenu1/2 cycle
+  startGameMusic(scene),     // destroys current track, starts shuffled game playlist
+  stopMusicFadeOut(),        // graceful 1s fade out then destroy — use for normal scene exits
+  stopMusicNow(),            // instant stop and destroy — use for reset/hard transitions
+  playSfx(scene, key),       // plays a SFX key at sfxVolume
+  setMusicVolume(v),         // live-updates current track + persists to SaveSystem
+  setSfxVolume(v),           // persists to SaveSystem (applies to next playSfx call)
+  toggleMusic(),             // mutes/unmutes current track + persists, returns new boolean state
 };
 ```
 
@@ -400,26 +401,22 @@ export class UpgradeSystem {
 
 ### AchievementSystem (AchievementSystem.js)
 
-**Responsibility:** Track milestones, unlock achievements.
+**Responsibility:** Track milestones, unlock achievements, show toast notifications.
+
+Exported as an **object** (not a class). Imports `ACHIEVEMENTS` from `AchievementConfig.js`.
 
 ```javascript
-export class AchievementSystem {
-  static checkMilestones(gameState) {
-    const toUnlock = [];
-    
-    if (gameState.asteroidsDestroyed === 1) toUnlock.push('firstAsteroid');
-    if (gameState.asteroidsDestroyed === 10) toUnlock.push('tenAsteroids');
-    // ... more checks
+export const AchievementSystem = {
+  // Returns array of newly-unlocked achievement keys. Call after every stat update.
+  checkMilestones(gameState) { /* ... */ },
 
-    return toUnlock.filter(a => !gameState.achievements[a].unlocked);
-  }
+  // Marks achievements unlocked, plays SFX, shows staggered toast notifications.
+  // scene is required — SFX and tweens need a live Phaser scene reference.
+  unlockMultiple(keys, gameState, scene) { /* ... */ },
 
-  static unlock(achievementKey, gameState) {
-    gameState.achievements[achievementKey].unlocked = true;
-    gameState.achievements[achievementKey].unlockedAt = Date.now();
-    this.playUnlockSound();
-  }
-}
+  // Shows a fading toast at the bottom of the screen for ~2.5s.
+  showNotification(scene, achievementName) { /* ... */ }
+};
 ```
 
 ---

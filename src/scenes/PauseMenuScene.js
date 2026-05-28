@@ -5,7 +5,6 @@ import { SaveSystem } from "../systems/SaveSystem.js";
 export class PauseScene extends Phaser.Scene {
     constructor() {
         super({ key: 'PauseScene' });
-        console.log('Pause Scene loaded');
     }
 
     create() {

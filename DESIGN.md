@@ -29,19 +29,19 @@ Design decisions, concrete numbers, and intended feel. This is the *why* and *ho
 ### Yield Per Asteroid Type
 
 **Impure Asteroid:**
-- Health: 10–20 (varies by variant)
-- Minerals per destroy: 10–20
+- Health: 3 clicks (fixed for all variants)
+- Minerals per destroy: 5–10
 - Alloys per destroy: 0
 - Chunks spawned: 2–3
-- Speed: 80–120 px/s
+- Speed: 20–50 px/s
 - Spawn weight: 60% of spawns
 
 **Normal Asteroid:**
-- Health: 15–30 (varies by variant)
-- Minerals per destroy: 15–30
-- Alloys per destroy: 5–15
-- Chunks spawned: 3–4
-- Speed: 100–150 px/s
+- Health: 3 clicks (fixed for all variants)
+- Minerals per destroy: 10–20
+- Alloys per destroy: 5–10
+- Chunks spawned: 2–3
+- Speed: 20–50 px/s
 - Spawn weight: 40% of spawns
 
 **Rationale:** Normal asteroids are harder (more health, faster) but reward Alloys. This creates decision space: efficient clicking (many Impure asteroids) vs. efficiency (fewer Normal asteroids for rare drops).
@@ -301,7 +301,7 @@ All state persists in a single JSON object under `localStorage['voidwork_save']`
 2. Confirmation prompt appears: *"Reset all progress? This cannot be undone."*
 3. Player clicks "Yes, Reset"
 4. `SaveSystem.reset()` — removes `localStorage['voidwork_save']`
-5. `AudioManager.stopMusic()` — silence before transition
+5. `AudioManager.stopMusicNow()` — instant silence before transition
 6. All active scenes stopped
 7. `scene.start('MainMenuScene')` — boot fresh as if launching for the first time
 

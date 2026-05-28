@@ -3,7 +3,6 @@ import { GAME_WIDTH, GAME_HEIGHT, GAME_CENTER_X, GAME_CENTER_Y } from "../config
 export class Preloader extends Phaser.Scene {
     constructor() {
         super({ key: 'Preloader' });
-        console.log('Preloader Scene loaded');
     }
     
     preload() {
@@ -103,6 +102,4 @@ export class Preloader extends Phaser.Scene {
         
     }
 
-    create() {
-    }
 }
